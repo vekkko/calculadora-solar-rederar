@@ -242,7 +242,9 @@
             "theme_color": "#0056B3",
             "icons": [
                 {
-                    // [url=https://postimg.cc/tsmHVM2N][img]https://i.postimg.cc/tsmHVM2N/LOGO-2024.jpg[/img][/url]                    "src": "https://i.postimg.cc/NKXQP4LY/LOGO-2024.jpg",
+                    // AQUÍ ES DONDE DEBES CAMBIAR EL LOGO. Reemplaza la URL actual por la de tu nueva imagen.
+                    // Asegúrate de que la imagen sea cuadrada (192x192, 512x512, etc.) y que la URL sea válida.
+                    "src": "https://i.postimg.cc/NKXQP4LY/LOGO-2024.jpg",
                     "sizes": "192x192",
                     "type": "image/jpeg"
                 },
@@ -622,7 +624,8 @@
             tableRows.forEach(row => {
                 const kwhCell = row.querySelector('[data-daily-kwh]');
                 if (kwhCell) {
-                    totalConsumption += parseFloat(kwhCell.dataset.daily-kwh);
+                    // FIX: Corrected dataset access from 'daily-kwh' to 'dailyKwh'
+                    totalConsumption += parseFloat(kwhCell.dataset.dailyKwh);
                 }
             });
             document.getElementById('totalDailyConsumption').innerText = `${totalConsumption.toFixed(2)} kWh`;
@@ -630,4 +633,3 @@
     </script>
 </body>
 </html>
-

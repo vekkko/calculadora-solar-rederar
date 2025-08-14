@@ -101,14 +101,16 @@
                     </div>
                 </div>
 
-                <div class="mt-6 flex flex-col sm:flex-row gap-4">
-                    <button id="calculateOnGridBtn" onclick="calculateOnGridSystem()" disabled class="flex-1 w-full sm:w-auto bg-rederar-blue hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 disabled-button">
+                <div class="mt-6 flex flex-col gap-2">
+                    <button id="calculateOnGridBtn" onclick="calculateOnGridSystem()" disabled class="w-full bg-rederar-blue hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 disabled-button">
                         Calcular Sistema On-Grid
                     </button>
-                    <button onclick="sendOnGridQuoteRequest()" class="flex-1 w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300">
-                        <i class="fab fa-whatsapp mr-2"></i> Solicitar Cotización
-                    </button>
+                    <!-- Mensaje para indicar al usuario que debe completar los datos del cliente -->
+                    <p class="text-sm text-gray-500 text-center">Para calcular el sistema debe tener cargado datos del cliente.</p>
                 </div>
+                <button onclick="sendOnGridQuoteRequest()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 mt-4">
+                    <i class="fab fa-whatsapp mr-2"></i> Solicitar Cotización
+                </button>
             </div>
 
             <!-- Off-Grid Calculator Section -->
@@ -201,14 +203,16 @@
                     </div>
                 </div>
                 
-                <div class="mt-6 flex flex-col sm:flex-row gap-4">
-                    <button id="calculateOffGridBtn" onclick="calculateOffGridSystem()" disabled class="flex-1 w-full sm:w-auto bg-rederar-blue hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 disabled-button">
+                <div class="mt-6 flex flex-col gap-2">
+                    <button id="calculateOffGridBtn" onclick="calculateOffGridSystem()" disabled class="w-full bg-rederar-blue hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 disabled-button">
                         Calcular Sistema Off-Grid
                     </button>
-                    <button onclick="sendOffGridQuoteRequest()" class="flex-1 w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300">
-                        <i class="fab fa-whatsapp mr-2"></i> Solicitar Cotización
-                    </button>
+                    <!-- Mensaje para indicar al usuario que debe completar los datos del cliente -->
+                    <p class="text-sm text-gray-500 text-center">Para calcular el sistema debe tener cargado datos del cliente.</p>
                 </div>
+                <button onclick="sendOffGridQuoteRequest()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 mt-4">
+                    <i class="fab fa-whatsapp mr-2"></i> Solicitar Cotización
+                </button>
             </div>
         </div>
     </div>

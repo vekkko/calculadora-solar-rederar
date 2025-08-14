@@ -24,6 +24,11 @@
         .bg-rederar-blue {
             background-color: #0056B3;
         }
+        /* Estilo para botones deshabilitados */
+        .disabled-button {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body class="p-4 sm:p-8">
@@ -51,15 +56,15 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                     <label for="clientName" class="block text-sm font-medium text-white">Nombre Completo</label>
-                    <input type="text" id="clientName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rederar-blue focus:ring-rederar-blue p-2 border" placeholder="Juan Pérez">
+                    <input type="text" id="clientName" class="client-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rederar-blue focus:ring-rederar-blue p-2 border" placeholder="Juan Pérez">
                 </div>
                 <div>
                     <label for="clientPhone" class="block text-sm font-medium text-white">Teléfono</label>
-                    <input type="tel" id="clientPhone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rederar-blue focus:ring-rederar-blue p-2 border" placeholder="+5493434802264">
+                    <input type="tel" id="clientPhone" class="client-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rederar-blue focus:ring-rederar-blue p-2 border" placeholder="+5493434802264">
                 </div>
                 <div>
                     <label for="clientAddress" class="block text-sm font-medium text-white">Dirección</label>
-                    <input type="text" id="clientAddress" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rederar-blue focus:ring-rederar-blue p-2 border" placeholder="Av. Siempre Viva 742, Paraná">
+                    <input type="text" id="clientAddress" class="client-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rederar-blue focus:ring-rederar-blue p-2 border" placeholder="Av. Siempre Viva 742, Paraná">
                 </div>
             </div>
         </div>
@@ -98,7 +103,7 @@
                 </div>
 
                 <div class="mt-6 flex flex-col sm:flex-row gap-4">
-                    <button onclick="calculateOnGridSystem()" class="flex-1 w-full sm:w-auto bg-rederar-blue hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300">
+                    <button id="calculateOnGridBtn" onclick="calculateOnGridSystem()" disabled class="flex-1 w-full sm:w-auto bg-rederar-blue hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 disabled-button">
                         Calcular Sistema On-Grid
                     </button>
                     <button onclick="sendOnGridQuoteRequest()" class="flex-1 w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300">
@@ -199,7 +204,7 @@
                 </div>
                 
                 <div class="mt-6 flex flex-col sm:flex-row gap-4">
-                    <button onclick="calculateOffGridSystem()" class="flex-1 w-full sm:w-auto bg-rederar-blue hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300">
+                    <button id="calculateOffGridBtn" onclick="calculateOffGridSystem()" disabled class="flex-1 w-full sm:w-auto bg-rederar-blue hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 disabled-button">
                         Calcular Sistema Off-Grid
                     </button>
                     <button onclick="sendOffGridQuoteRequest()" class="flex-1 w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300">
@@ -375,8 +380,43 @@
             
             // Populate predefined appliances dropdown
             populatePredefinedAppliances();
+            
+            // Add event listeners to client input fields to enable/disable buttons
+            const clientInputs = document.querySelectorAll('.client-input');
+            clientInputs.forEach(input => {
+                input.addEventListener('input', checkClientInputs);
+            });
+            
+            // Initial check on page load
+            checkClientInputs();
         });
 
+        /**
+         * Checks if client input fields are filled and enables/disables the calculation buttons.
+         */
+        function checkClientInputs() {
+            const clientName = document.getElementById('clientName').value.trim();
+            const clientPhone = document.getElementById('clientPhone').value.trim();
+            const clientAddress = document.getElementById('clientAddress').value.trim();
+
+            const isClientDataComplete = clientName !== '' && clientPhone !== '' && clientAddress !== '';
+
+            const calculateOnGridBtn = document.getElementById('calculateOnGridBtn');
+            const calculateOffGridBtn = document.getElementById('calculateOffGridBtn');
+            
+            if (isClientDataComplete) {
+                calculateOnGridBtn.disabled = false;
+                calculateOnGridBtn.classList.remove('disabled-button');
+                calculateOffGridBtn.disabled = false;
+                calculateOffGridBtn.classList.remove('disabled-button');
+            } else {
+                calculateOnGridBtn.disabled = true;
+                calculateOnGridBtn.classList.add('disabled-button');
+                calculateOffGridBtn.disabled = true;
+                calculateOffGridBtn.classList.add('disabled-button');
+            }
+        }
+        
         // Function to populate province dropdowns
         function populateProvinces(selectId) {
             const provinceSelect = document.getElementById(selectId);
@@ -436,7 +476,7 @@
                 resultsDiv.classList.remove('hidden');
                 errorMessage.innerText = 'Por favor, ingresa un consumo anual válido y selecciona una provincia.';
                 successContent.classList.add('hidden');
-                return;
+                return false; // Return false to indicate failure
             }
 
             errorMessage.innerText = '';
@@ -451,21 +491,31 @@
 
             document.getElementById('onGridSystemSizeResult').innerText = `El tamaño ideal de sistema solar para tu consumo es de: ${idealSystemSize} kW.`;
             document.getElementById('onGridGenerationResult').innerText = `Este sistema podría generar hasta ${estimatedAnnualGeneration.toFixed(0)} kWh anualmente, cubriendo tu consumo actual.`;
+            return true; // Return true to indicate success
         }
         
-        // Function to send the On-Grid quote request via WhatsApp
+        /**
+         * Performs the On-Grid calculation first, then sends the quote request.
+         */
         function sendOnGridQuoteRequest() {
+            // First, validate client data.
             const clientName = document.getElementById('clientName').value.trim();
             const clientPhone = document.getElementById('clientPhone').value.trim();
             const clientAddress = document.getElementById('clientAddress').value.trim();
+
+            if (!clientName || !clientPhone || !clientAddress) {
+                showAlert('Por favor, completa los datos del cliente antes de solicitar una cotización.');
+                return;
+            }
+
+            // Then, perform the calculation. If it fails, stop.
+            if (!calculateOnGridSystem()) {
+                return;
+            }
+
             const annualKwh = document.getElementById('annualKwh').value;
             const selectedProvinceName = document.getElementById('provinceOnGrid').options[document.getElementById('provinceOnGrid').selectedIndex].text;
             const systemSizeResult = document.getElementById('onGridSystemSizeResult').innerText;
-
-            if (!clientName || !clientPhone || !clientAddress || !annualKwh || systemSizeResult === "" || selectedProvinceName === "Selecciona una provincia") {
-                showAlert('Por favor, completa los datos del cliente y realiza la simulación del sistema On-Grid primero.');
-                return;
-            }
 
             const message = `*SOLICITUD DE COTIZACIÓN ON-GRID*\n\n` +
                             `*Datos del Cliente:*\n` +
@@ -498,7 +548,7 @@
                 resultsDiv.classList.remove('hidden');
                 errorMessage.innerText = 'Por favor, agrega al menos un artefacto y completa todos los campos con valores válidos.';
                 successContent.classList.add('hidden');
-                return;
+                return false; // Return false to indicate failure
             }
 
             errorMessage.innerText = '';
@@ -514,24 +564,34 @@
             
             document.getElementById('offGridPanelResult').innerText = `Tamaño de los paneles solares: ${panelSize} kWp.`;
             document.getElementById('offGridBatteryResult').innerText = `Capacidad del banco de baterías: ${batterySize} kWh.`;
+            return true; // Return true to indicate success
         }
 
-        // Function to send the Off-Grid quote request via WhatsApp
+        /**
+         * Performs the Off-Grid calculation first, then sends the quote request.
+         */
         function sendOffGridQuoteRequest() {
+            // First, validate client data.
             const clientName = document.getElementById('clientName').value.trim();
             const clientPhone = document.getElementById('clientPhone').value.trim();
             const clientAddress = document.getElementById('clientAddress').value.trim();
+
+            if (!clientName || !clientPhone || !clientAddress) {
+                showAlert('Por favor, completa los datos del cliente antes de solicitar una cotización.');
+                return;
+            }
+
+            // Then, perform the calculation. If it fails, stop.
+            if (!calculateOffGridSystem()) {
+                return;
+            }
+            
             const totalDailyConsumptionElement = document.getElementById('totalDailyConsumption');
             const dailyKwh = parseFloat(totalDailyConsumptionElement.innerText.replace(' kWh', ''));
             const autonomyDays = document.getElementById('autonomyDays').value;
             const selectedProvinceName = document.getElementById('provinceOffGrid').options[document.getElementById('provinceOffGrid').selectedIndex].text;
             const panelResult = document.getElementById('offGridPanelResult').innerText;
             const batteryResult = document.getElementById('offGridBatteryResult').innerText;
-
-            if (!clientName || !clientPhone || !clientAddress || isNaN(dailyKwh) || dailyKwh <= 0 || panelResult === "" || batteryResult === "" || selectedProvinceName === "Selecciona una provincia") {
-                showAlert('Por favor, completa los datos del cliente y realiza la simulación del sistema Off-Grid primero.');
-                return;
-            }
             
             let artifactList = '';
             const tableRows = document.querySelectorAll('#artifactTableBody tr');

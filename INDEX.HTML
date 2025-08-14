@@ -97,8 +97,7 @@
                 <div id="onGridResults" class="hidden mt-6 transition-all duration-300">
                     <div id="onGridErrorMessage" class="text-red-600 text-sm font-semibold mb-2"></div>
                     <div id="onGridSuccessContent" class="space-y-3 p-4 bg-blue-50 rounded-lg border border-blue-300">
-                        <p id="onGridSystemSizeResult" class="text-rederar-blue font-semibold"></p>
-                        <p id="onGridGenerationResult" class="text-rederar-blue font-semibold"></p>
+                        <!-- Results will be dynamically populated here -->
                     </div>
                 </div>
 
@@ -198,8 +197,7 @@
                 <div id="offGridResults" class="hidden mt-6 transition-all duration-300">
                     <div id="offGridErrorMessage" class="text-red-600 text-sm font-semibold mb-2"></div>
                     <div id="offGridSuccessContent" class="space-y-3 p-4 bg-blue-50 rounded-lg border border-blue-300">
-                        <p id="offGridPanelResult" class="text-rederar-blue font-semibold"></p>
-                        <p id="offGridBatteryResult" class="text-rederar-blue font-semibold"></p>
+                        <!-- Results will be dynamically populated here -->
                     </div>
                 </div>
                 
@@ -350,6 +348,11 @@
             'tierra-del-fuego': { name: 'Tierra del Fuego', hsp: 3.5, localidades: ['Ushuaia', 'Río Grande', 'Tolhuin'] },
             'formosa': { name: 'Formosa', hsp: 4.8, localidades: ['Formosa Capital', 'Clorinda', 'El Colorado', 'Pirané', 'Ingeniero Juárez'] }
         };
+        
+        // Configuration for solar components
+        const PANEL_WATTAGE = 550; // W
+        const MIN_INVERTER_KW = 2; // kW
+        const INVERTER_SIZES_KW = [2, 3, 4, 5, 6, 8, 10]; // Common inverter sizes in kW
 
         // Data for common off-grid appliances
         const predefinedAppliancesData = {
@@ -463,7 +466,7 @@
             }
         }
 
-        // Function for the on-grid calculator
+        // Function for the on-grid calculator with component sizing
         function calculateOnGridSystem() {
             const annualKwh = parseFloat(document.getElementById('annualKwh').value);
             const selectedProvinceKey = document.getElementById('provinceOnGrid').value;
@@ -482,15 +485,32 @@
             errorMessage.innerText = '';
             successContent.classList.remove('hidden');
             resultsDiv.classList.remove('hidden');
-
+            
             const systemEfficiency = 0.85;
             const hsp = provinceData[selectedProvinceKey].hsp;
+            
+            // 1. Calculate the ideal system size in kW
+            const idealSystemSizeKw = (annualKwh / (hsp * 365 * systemEfficiency));
+            
+            // 2. Calculate number of 550W panels
+            const numPanels = Math.ceil((idealSystemSizeKw * 1000) / PANEL_WATTAGE);
+            const totalPanelPowerKw = (numPanels * PANEL_WATTAGE / 1000).toFixed(2);
 
-            const idealSystemSize = (annualKwh / (hsp * 365 * systemEfficiency)).toFixed(2);
-            const estimatedAnnualGeneration = idealSystemSize * hsp * 365 * systemEfficiency;
-
-            document.getElementById('onGridSystemSizeResult').innerText = `El tamaño ideal de sistema solar para tu consumo es de: ${idealSystemSize} kW.`;
-            document.getElementById('onGridGenerationResult').innerText = `Este sistema podría generar hasta ${estimatedAnnualGeneration.toFixed(0)} kWh anualmente, cubriendo tu consumo actual.`;
+            // 3. Select the appropriate inverter size (min 2kW)
+            let inverterSizeKw = INVERTER_SIZES_KW.find(size => size >= idealSystemSizeKw);
+            if (!inverterSizeKw || inverterSizeKw < MIN_INVERTER_KW) {
+                inverterSizeKw = INVERTER_SIZES_KW.find(size => size >= MIN_INVERTER_KW);
+            }
+            
+            const estimatedAnnualGeneration = totalPanelPowerKw * hsp * 365 * systemEfficiency;
+            
+            // Display results
+            successContent.innerHTML = `
+                <p id="onGridPanelResult" class="text-rederar-blue font-semibold">Cantidad de paneles solares (550Wp): ${numPanels} (Potencia total: ${totalPanelPowerKw} kWp)</p>
+                <p id="onGridInverterResult" class="text-rederar-blue font-semibold">Tamaño del inversor On-Grid: ${inverterSizeKw} kW</p>
+                <p id="onGridGenerationResult" class="text-rederar-blue font-semibold">Este sistema podría generar hasta ${estimatedAnnualGeneration.toFixed(0)} kWh anualmente, cubriendo tu consumo actual.</p>
+            `;
+            
             return true; // Return true to indicate success
         }
         
@@ -515,7 +535,11 @@
 
             const annualKwh = document.getElementById('annualKwh').value;
             const selectedProvinceName = document.getElementById('provinceOnGrid').options[document.getElementById('provinceOnGrid').selectedIndex].text;
-            const systemSizeResult = document.getElementById('onGridSystemSizeResult').innerText;
+            
+            // Get the calculated results from the DOM
+            const panelResult = document.getElementById('onGridPanelResult').innerText;
+            const inverterResult = document.getElementById('onGridInverterResult').innerText;
+            const generationResult = document.getElementById('onGridGenerationResult').innerText;
 
             const message = `*SOLICITUD DE COTIZACIÓN ON-GRID*\n\n` +
                             `*Datos del Cliente:*\n` +
@@ -525,7 +549,9 @@
                             `Provincia: ${selectedProvinceName}\n\n` +
                             `*Dimensionamiento Inicial:*\n` +
                             `Consumo anual: ${annualKwh} kWh\n` +
-                            `${systemSizeResult}\n`;
+                            `${panelResult}\n` +
+                            `${inverterResult}\n` +
+                            `${generationResult}\n`;
             
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = `https://api.whatsapp.com/send?phone=+543434802264&text=${encodedMessage}`;
@@ -533,7 +559,7 @@
             window.open(whatsappUrl, '_blank');
         }
 
-        // Function for the off-grid calculator
+        // Function for the off-grid calculator with component sizing
         function calculateOffGridSystem() {
             const totalDailyConsumptionElement = document.getElementById('totalDailyConsumption');
             const dailyKwh = parseFloat(totalDailyConsumptionElement.innerText.replace(' kWh', ''));
@@ -558,12 +584,30 @@
             const systemEfficiency = 0.8;
             const batteryEfficiency = 0.85;
             const hsp = provinceData[selectedProvinceKey].hsp;
-
-            const batterySize = ((dailyKwh * autonomyDays) / batteryEfficiency).toFixed(2);
-            const panelSize = ((dailyKwh / (hsp * systemEfficiency)) * 1.2).toFixed(2);
             
-            document.getElementById('offGridPanelResult').innerText = `Tamaño de los paneles solares: ${panelSize} kWp.`;
-            document.getElementById('offGridBatteryResult').innerText = `Capacidad del banco de baterías: ${batterySize} kWh.`;
+            // 1. Calculate battery size in kWh
+            const batterySizeKwh = ((dailyKwh * autonomyDays) / batteryEfficiency).toFixed(2);
+            
+            // 2. Calculate the ideal panel size in kWp
+            const idealPanelSizeKw = ((dailyKwh / (hsp * systemEfficiency)) * 1.2);
+
+            // 3. Calculate number of 550W panels
+            const numPanels = Math.ceil((idealPanelSizeKw * 1000) / PANEL_WATTAGE);
+            const totalPanelPowerKw = (numPanels * PANEL_WATTAGE / 1000).toFixed(2);
+
+            // 4. Select the appropriate inverter size (min 2kW)
+            let inverterSizeKw = INVERTER_SIZES_KW.find(size => size >= idealPanelSizeKw);
+            if (!inverterSizeKw || inverterSizeKw < MIN_INVERTER_KW) {
+                inverterSizeKw = INVERTER_SIZES_KW.find(size => size >= MIN_INVERTER_KW);
+            }
+            
+            // Display results
+            successContent.innerHTML = `
+                <p id="offGridPanelResult" class="text-rederar-blue font-semibold">Cantidad de paneles solares (550Wp): ${numPanels} (Potencia total: ${totalPanelPowerKw} kWp)</p>
+                <p id="offGridInverterResult" class="text-rederar-blue font-semibold">Tamaño del inversor Off-Grid: ${inverterSizeKw} kW</p>
+                <p id="offGridBatteryResult" class="text-rederar-blue font-semibold">Capacidad del banco de baterías: ${batterySizeKwh} kWh</p>
+            `;
+
             return true; // Return true to indicate success
         }
 
@@ -590,7 +634,10 @@
             const dailyKwh = parseFloat(totalDailyConsumptionElement.innerText.replace(' kWh', ''));
             const autonomyDays = document.getElementById('autonomyDays').value;
             const selectedProvinceName = document.getElementById('provinceOffGrid').options[document.getElementById('provinceOffGrid').selectedIndex].text;
+            
+            // Get the calculated results from the DOM
             const panelResult = document.getElementById('offGridPanelResult').innerText;
+            const inverterResult = document.getElementById('offGridInverterResult').innerText;
             const batteryResult = document.getElementById('offGridBatteryResult').innerText;
             
             let artifactList = '';
@@ -620,6 +667,7 @@
                             `Consumo diario total: ${dailyKwh.toFixed(2)} kWh\n` +
                             `Autonomía de baterías: ${autonomyDays} días\n` +
                             `${panelResult}\n` +
+                            `${inverterResult}\n` +
                             `${batteryResult}\n`;
             
             const encodedMessage = encodeURIComponent(message);

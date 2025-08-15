@@ -513,6 +513,7 @@
                 <p id="onGridPanelResult" class="text-rederar-blue font-semibold">Cantidad de paneles solares (550Wp): ${numPanels} (Potencia total: ${totalPanelPowerKw} kWp)</p>
                 <p id="onGridInverterResult" class="text-rederar-blue font-semibold">Tamaño del inversor On-Grid: ${inverterSizeKw} kW</p>
                 <p id="onGridGenerationResult" class="text-rederar-blue font-semibold">Este sistema podría generar hasta ${estimatedAnnualGeneration.toFixed(0)} kWh anualmente, cubriendo tu consumo actual.</p>
+                <p class="text-gray-600 italic mt-4">**Importante:** Esta es una estimación inicial. Los valores pueden variar según las condiciones reales y el diseño final del sistema.</p>
             `;
             
             return true; // Return true to indicate success
@@ -610,6 +611,7 @@
                 <p id="offGridPanelResult" class="text-rederar-blue font-semibold">Cantidad de paneles solares (550Wp): ${numPanels} (Potencia total: ${totalPanelPowerKw} kWp)</p>
                 <p id="offGridInverterResult" class="text-rederar-blue font-semibold">Tamaño del inversor Off-Grid: ${inverterSizeKw} kW</p>
                 <p id="offGridBatteryResult" class="text-rederar-blue font-semibold">Capacidad del banco de baterías: ${batterySizeKwh} kWh</p>
+                <p class="text-gray-600 italic mt-4">**Importante:** Esta es una estimación inicial. Los valores pueden variar según las condiciones reales y el diseño final del sistema.</p>
             `;
 
             return true; // Return true to indicate success
@@ -753,6 +755,3 @@
     </script>
 </body>
 </html>
-
-
-

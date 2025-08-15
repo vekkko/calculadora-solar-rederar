@@ -697,6 +697,7 @@
                 return;
             }
             
+            // Calcula el consumo diario en kWh: (W * horas / 1000)
             const dailyKwh = (quantity * consumption * hours / 1000).toFixed(2);
             
             const tableBody = document.getElementById('artifactTableBody');
@@ -746,4 +747,5 @@
     </script>
 </body>
 </html>
+
 

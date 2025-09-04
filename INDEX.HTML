@@ -3,562 +3,1082 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dimensionamiento Inicial Sistema Solar REDERAR</title>
-    <!-- Favicon: El ícono en la pestaña del navegador -->
-    <link rel="icon" type="image/jpeg" href="https://i.postimg.cc/Pv5PgCWs/LOGO-2024.jpg">
-    <!-- Tailwind CSS for styling -->
+    <title>Calculadora de Sistemas Solares</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #002244; /* Deep blue from the logo */
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .rederar-yellow {
-            color: #FFC107; /* Yellow from the sun in the logo */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
-        .rederar-blue {
-            color: #0056B3; /* A medium blue from the wave in the logo */
-        }
-        .bg-rederar-blue {
-            background-color: #0056B3;
-        }
-        /* Estilo para botones deshabilitados */
-        .disabled-button {
-            opacity: 0.6;
-            cursor: not-allowed;
+        input[type="number"] {
+            -moz-appearance: textfield;
         }
     </style>
 </head>
-<body class="p-4 sm:p-8">
+<body class="flex h-screen bg-gray-100">
 
-    <!-- Main Container -->
-    <div class="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden p-6 sm:p-10">
-        <!-- Logo and Title -->
-        <div class="flex flex-col items-center mb-8">
-            <!-- Logo principal de la página -->
-            <img src="https://i.postimg.cc/Pv5PgCWs/LOGO-2024.jpg" alt="Logo de REDERAR" class="mb-4 h-24 object-contain rounded-full">
-            <h1 class="text-4xl font-extrabold text-center text-gray-800 mb-2">
-                DIMENSIONAMIENTO INICIAL SISTEMA SOLAR
-            </h1>
-            <p class="text-center text-gray-600">Dimensiona tu sistema On-Grid o Off-Grid y solicita una cotización.</p>
+    <!-- Sidebar de Navegación -->
+    <div class="w-20 bg-blue-900 text-white flex flex-col items-center py-8 space-y-6">
+        <div class="mb-8">
+            <img src="https://i.postimg.cc/S2hzCGwP/LOGO-2024.jpg" alt="Logo de Rederar" class="h-12 w-12 rounded-lg" onerror="this.onerror=null; this.src='https://placehold.co/48x48?text=Logo';" />
+        </div>
+        <button id="btn-clientData" class="flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors bg-blue-800 text-white">
+            <img src="https://i.postimg.cc/hhYfTP1W/logo-clientes.png" alt="Logo Cliente" class="h-8 w-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32?text=Client';" />
+            <span class="text-xs text-center">Datos del Cliente</span>
+        </button>
+        <button id="btn-onGrid" class="flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors text-gray-300 hover:text-white">
+            <img src="https://i.postimg.cc/GTQdrH69/logo-on-grid.png" alt="Logo On-Grid" class="h-8 w-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32?text=On';" />
+            <span class="text-xs text-center">On-Grid</span>
+        </button>
+        <button id="btn-offGrid" class="flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors text-gray-300 hover:text-white">
+            <img src="https://i.postimg.cc/Sn9BDq2v/logo-off-grid.png" alt="Logo Off-Grid" class="h-8 w-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32?text=Off';" />
+            <span class="text-xs text-center">Off-Grid</span>
+        </button>
+        <button id="btn-termotanque" class="flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors text-gray-300 hover:text-white">
+            <img src="https://i.postimg.cc/dDcgFRvx/logo-termotanquesolar.png" alt="Logo Termotanque" class="h-8 w-8" onerror="this.onerror=null; this.src='https://placehold.co/32x32?text=Tank';" />
+            <span class="text-xs text-center">Termotanque</span>
+        </button>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="flex-1 flex flex-col bg-gray-100">
+        <div class="bg-blue-900 text-white text-center py-4 rounded-t-xl">
+            <img src="https://i.postimg.cc/S2hzCGwP/LOGO-2024.jpg" alt="Logo de Rederar" class="h-24 w-24 rounded-lg mx-auto mb-4" onerror="this.onerror=null; this.src='https://placehold.co/96x96?text=Logo';" />
+            <h1 class="text-2xl font-bold text-white">Calculadora Sistemas Solares Inicial</h1>
+        </div>
+        <div class="flex-1 overflow-y-auto p-8">
+            <div id="content-area" class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
+                <!-- Secciones de Contenido (renderizadas por JS) -->
+                <div id="clientData-section" class="flex-1">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-4">Datos del Cliente</h1>
+                    <p class="text-sm text-gray-600 mb-6">Ingresa los datos del cliente para comenzar con el dimensionamiento de los sistemas.</p>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="clientName" class="block text-sm font-medium text-gray-700 mb-1">Nombre y Apellido</label>
+                            <input type="text" id="clientName" placeholder="e.g., Juan Pérez" class="w-full p-3 rounded-lg border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        </div>
+                        <div>
+                            <label for="clientAddress" class="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+                            <input type="text" id="clientAddress" placeholder="e.g., Av. Siempreviva 742" class="w-full p-3 rounded-lg border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        </div>
+                        <div>
+                            <label for="clientProvince" class="block text-sm font-medium text-gray-700 mb-1">Provincia</label>
+                            <select id="clientProvince" class="w-full p-3 rounded-lg border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Selecciona una provincia</option>
+                                <option value="Buenos Aires">Buenos Aires</option>
+                                <option value="Catamarca">Catamarca</option>
+                                <option value="Chaco">Chaco</option>
+                                <option value="Chubut">Chubut</option>
+                                <option value="Ciudad Autónoma de Buenos Aires">Ciudad Autónoma de Buenos Aires</option>
+                                <option value="Córdoba">Córdoba</option>
+                                <option value="Corrientes">Corrientes</option>
+                                <option value="Entre Ríos">Entre Ríos</option>
+                                <option value="Formosa">Formosa</option>
+                                <option value="Jujuy">Jujuy</option>
+                                <option value="La Pampa">La Pampa</option>
+                                <option value="La Rioja">La Rioja</option>
+                                <option value="Mendoza">Mendoza</option>
+                                <option value="Misiones">Misiones</option>
+                                <option value="Neuquén">Neuquén</option>
+                                <option value="Río Negro">Río Negro</option>
+                                <option value="Salta">Salta</option>
+                                <option value="San Juan">San Juan</option>
+                                <option value="San Luis">San Luis</option>
+                                <option value="Santa Cruz">Santa Cruz</option>
+                                <option value="Santa Fe">Santa Fe</option>
+                                <option value="Santiago del Estero">Santiago del Estero</option>
+                                <option value="Tierra del Fuego">Tierra del Fuego</option>
+                                <option value="Tucumán">Tucumán</option>
+                            </select>
+                        </div>
+                    </div>
+                    <p id="clientDataMessage" class="hidden mt-4 p-4 bg-green-100 rounded-lg text-green-800 text-center font-bold">
+                        ¡Datos del cliente completados! Ahora puedes continuar con los cálculos.
+                    </p>
+                </div>
+
+                <div id="onGrid-section" class="flex-1 hidden">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-4">Sistemas On-Grid</h1>
+                    <img src="https://i.postimg.cc/GTQdrH69/logo-on-grid.png" alt="Logo On-Grid" class="h-24 mb-4 rounded-lg mx-auto" onerror="this.onerror=null; this.src='https://placehold.co/96x96?text=On-Grid';">
+                    <p class="text-sm text-gray-600 mb-6">
+                        Calcula la configuración On-Grid ideal para la vivienda del cliente.
+                    </p>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="annualKwh" class="block text-sm font-medium text-gray-700 mb-1">Consumo anual de kWh</label>
+                            <input type="number" id="annualKwh" placeholder="e.g., 3600" class="w-full p-3 rounded-lg border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        </div>
+                    </div>
+                    <div class="mt-6 space-y-4">
+                        <button id="calculate-onGrid" class="w-full p-3 rounded-lg font-bold transition-colors bg-gray-400 cursor-not-allowed text-white" disabled>
+                            Calcular Sistema On-Grid
+                        </button>
+                        <div id="onGrid-result" class="hidden bg-blue-100 p-4 rounded-lg text-blue-800"></div>
+                        <p id="onGridDataIncomplete" class="text-xs text-red-500 text-center">Para calcular el sistema debe tener cargados los datos del cliente y el consumo anual.</p>
+                    </div>
+                </div>
+
+                <div id="offGrid-section" class="flex-1 hidden">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-4">Sistemas Off-Grid</h1>
+                    <img src="https://i.postimg.cc/Sn9BDq2v/logo-off-grid.png" alt="Logo Off-Grid" class="h-24 mb-4 rounded-lg mx-auto" onerror="this.onerror=null; this.src='https://placehold.co/96x96?text=Off-Grid';">
+                    <p class="text-sm text-gray-600 mb-6">
+                        Dimensiona un sistema solar aislado de la red eléctrica.
+                    </p>
+
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="w-full md:w-1/2">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">1. Seleccionar Electrodomésticos</h3>
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                                <select id="applianceSelect" class="w-full sm:w-2/3 p-3 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-500 transition duration-200">
+                                    <!-- Opciones se llenarán con JavaScript -->
+                                </select>
+                                <button id="addApplianceBtn" class="w-full sm:w-1/3 p-3 rounded-lg font-bold transition-colors bg-blue-600 hover:bg-blue-700 text-white shadow-md">
+                                    Añadir
+                                </button>
+                            </div>
+                            
+                            <h3 class="text-xl font-semibold text-gray-800 mt-6 mb-4">2. Lista de Consumo</h3>
+                            <div id="appliances-container" class="space-y-4">
+                                <!-- Appliance rows will be added here dynamically -->
+                            </div>
+                        </div>
+                        
+                        <div class="w-full md:w-1/2">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">3. Parámetros del Sistema</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="daysOfAutonomy" class="block text-sm font-medium text-gray-700 mb-1">Días de autonomía deseados (sin sol)</label>
+                                    <input type="number" id="daysOfAutonomy" placeholder="e.g., 2" class="w-full p-3 rounded-lg border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                </div>
+                            </div>
+                            <div class="mt-6 space-y-4">
+                                <button id="calculate-offGrid" class="w-full p-3 rounded-lg font-bold transition-colors bg-gray-400 cursor-not-allowed text-white" disabled>
+                                    Calcular Sistema Off-Grid
+                                </button>
+                                <div id="offGrid-result" class="hidden bg-blue-100 p-4 rounded-lg text-blue-800"></div>
+                                <p id="offGridDataIncomplete" class="text-xs text-red-500 text-center">Para calcular el sistema debe tener cargados los datos del cliente y los valores de consumo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="termotanque-section" class="flex-1 hidden">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-4">Termotanques Solares</h1>
+                    <img src="https://i.postimg.cc/dDcgFRvx/logo-termotanquesolar.png" alt="Logo Termotanque" class="h-24 mb-4 rounded-lg mx-auto" onerror="this.onerror=null; this.src='https://placehold.co/96x96?text=Termotanque';">
+                    <p class="text-sm text-gray-600 mb-6">Dimensiona el termotanque solar ideal para tu vivienda y solicita una cotización. Responde las siguientes preguntas.</p>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="personCount" class="block text-sm font-medium text-gray-700 mb-1">Cantidad de personas en la vivienda</label>
+                            <input type="number" id="personCount" placeholder="e.g., 4" class="w-full p-3 rounded-lg border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">¿Hay menores de 10 años en la vivienda?</label>
+                            <div class="flex space-x-4">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="hasMinors" value="si" class="form-radio text-blue-600" />
+                                    <span class="ml-2 text-gray-700">Sí</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="hasMinors" value="no" class="form-radio text-blue-600" />
+                                    <span class="ml-2 text-gray-700">No</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">¿Utilizará una bomba presurizadora?</label>
+                            <div class="flex space-x-4">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="hasPressurizer" value="si" class="form-radio text-blue-600" />
+                                    <span class="ml-2 text-gray-700">Sí</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="hasPressurizer" value="no" class="form-radio text-blue-600" />
+                                    <span class="ml-2 text-gray-700">No</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="waterType" class="block text-sm font-medium text-gray-700 mb-1">¿El agua de suministro es salada o dulce?</label>
+                            <select id="waterType" class="w-full p-3 rounded-lg border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Selecciona</option>
+                                <option value="dulce">Dulce</option>
+                                <option value="salada">Salada</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-6 space-y-4">
+                        <button id="calculate-termotanque" class="w-full p-3 rounded-lg font-bold transition-colors bg-gray-400 cursor-not-allowed text-white" disabled>
+                            Calcular Termotanque Solar
+                        </button>
+                        <div id="termotanque-result" class="hidden bg-blue-100 p-4 rounded-lg text-blue-800"></div>
+                        <p id="clientDataIncomplete" class="text-xs text-red-500 text-center">Para calcular el sistema debe tener cargados los datos del cliente.</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Client Information Section -->
-        <div class="bg-rederar-blue p-6 rounded-xl shadow-lg mb-10 border border-blue-600">
-            <div class="flex items-center mb-4 text-white">
-                <div class="bg-white p-3 rounded-full text-rederar-blue mr-4 shadow-md">
-                    <i class="fas fa-user"></i>
-                </div>
-                <h2 class="text-2xl font-bold">Datos del Cliente</h2>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                    <label for="clientName" class="block text-sm font-medium text-white">Nombre Completo</label>
-                    <input type="text" id="clientName" class="client-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rederar-blue focus:ring-rederar-blue p-2 border" placeholder="Juan Pérez">
-                </div>
-                <div>
-                    <label for="clientPhone" class="block text-sm font-medium text-white">Teléfono</label>
-                    <input type="tel" id="clientPhone" class="client-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rederar-blue focus:ring-rederar-blue p-2 border" placeholder="+5493434802264">
-                </div>
-                <div>
-                    <label for="clientAddress" class="block text-sm font-medium text-white">Dirección</label>
-                    <input type="text" id="clientAddress" class="client-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rederar-blue focus:ring-rederar-blue p-2 border" placeholder="Av. Siempre Viva 742, Paraná">
-                </div>
-            </div>
-        </div>
-        
-        <!-- On-Grid and Off-Grid Calculators Container -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <!-- On-Grid Calculator Section -->
-            <div class="bg-gray-100 p-6 rounded-xl shadow-lg border border-gray-200">
-                <div class="flex items-center mb-4">
-                    <div class="bg-rederar-blue p-3 rounded-full text-white mr-4 shadow-md">
-                        <i class="fas fa-plug"></i>
-                    </div>
-                    <h2 class="text-2xl font-bold text-rederar-blue">Sistema On-Grid</h2>
-                </div>
-                <p class="text-gray-600 mb-6">Calcula el tamaño del sistema solar conectado a la red. Ingresa tu consumo anual y la provincia para obtener la estimación.</p>
-
-                <div class="space-y-4 mb-6">
-                    <div>
-                        <label for="annualKwh" class="block text-sm font-medium text-gray-700">Consumo anual (kWh)</label>
-                        <input type="number" id="annualKwh" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rederar-blue focus:ring-rederar-blue p-2 border" placeholder="e.g., 3000">
-                    </div>
-                    <div>
-                        <label for="provinceOnGrid" class="block text-sm font-medium text-gray-700">Provincia</label>
-                        <select id="provinceOnGrid" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-rederar-blue focus:ring-rederar-blue p-2 border">
-                            <option value="">Selecciona una provincia</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div id="onGridResults" class="hidden mt-6 transition-all duration-300">
-                    <div id="onGridErrorMessage" class="text-red-600 text-sm font-semibold mb-2"></div>
-                    <div id="onGridSuccessContent" class="space-y-3 p-4 bg-blue-50 rounded-lg border border-blue-300">
-                        <!-- Results will be dynamically populated here -->
-                    </div>
-                </div>
-
-                <div class="mt-6 flex flex-col gap-2">
-                    <button id="calculateOnGridBtn" onclick="c1()" disabled class="w-full bg-rederar-blue hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 disabled-button">
-                        Calcular Sistema On-Grid
-                    </button>
-                    <!-- Mensaje para indicar al usuario que debe completar los datos del cliente -->
-                    <p class="text-sm text-gray-500 text-center">Para calcular el sistema debe tener cargado datos del cliente.</p>
-                </div>
-                <button onclick="s1()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 mt-4">
-                    <i class="fab fa-whatsapp mr-2"></i> Solicitar Cotización
-                </button>
-            </div>
-
-            <!-- Off-Grid Calculator Section -->
-            <div class="bg-gray-100 p-6 rounded-xl shadow-lg border border-gray-200">
-                <div class="flex items-center mb-4">
-                    <div class="bg-rederar-blue p-3 rounded-full text-white mr-4 shadow-md">
-                        <i class="fas fa-battery-three-quarters"></i>
-                    </div>
-                    <h2 class="text-2xl font-bold text-rederar-blue">Sistema Off-Grid</h2>
-                </div>
-                <p class="text-gray-600 mb-6">Calcula los componentes para un sistema aislado. Agrega tus artefactos y selecciona la provincia para obtener la estimación.</p>
-                
-                <div class="space-y-4 mb-6">
-                    <!-- New: Predefined Appliance Selection -->
-                    <div>
-                        <label for="predefinedAppliances" class="block text-sm font-medium text-gray-700">Seleccionar Artefacto Común</label>
-                        <select id="predefinedAppliances" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" onchange="s3(event)">
-                            <option value="">Selecciona un artefacto</option>
-                        </select>
-                    </div>
-
-                    <div class="border-t border-gray-300 my-4"></div>
-
-                    <!-- Artifact Input Form -->
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 items-end">
-                        <div>
-                            <label for="applianceName" class="block text-sm font-medium text-gray-700">Nombre</label>
-                            <input type="text" id="applianceName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="e.g., Heladera">
-                        </div>
-                        <div>
-                            <label for="applianceQuantity" class="block text-sm font-medium text-gray-700">Cantidad</label>
-                            <input type="number" id="applianceQuantity" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="e.g., 1">
-                        </div>
-                        <div>
-                            <label for="applianceConsumption" class="block text-sm font-medium text-gray-700">Consumo (W)</label>
-                            <input type="number" id="applianceConsumption" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="e.g., 100">
-                        </div>
-                        <div>
-                            <label for="applianceHours" class="block text-sm font-medium text-gray-700">Horas/día</label>
-                            <input type="number" id="applianceHours" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="e.g., 24">
-                        </div>
-                        <div class="col-span-2 sm:col-span-4">
-                            <button onclick="a1()" class="w-full bg-rederar-blue hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300">
-                                Agregar Artefacto
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Artifacts Table -->
-                    <div class="overflow-x-auto shadow rounded-lg border border-gray-300">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-200">
-                                <tr>
-                                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Artefacto</th>
-                                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cant.</th>
-                                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Consumo (W)</th>
-                                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hs/día</th>
-                                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Consumo Diario (kWh)</th>
-                                    <th scope="col" class="px-3 py-2"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="artifactTableBody" class="bg-white divide-y divide-gray-200">
-                                <!-- Table rows will be inserted here by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="space-y-4 mb-6">
-                    <div>
-                        <label for="totalDailyConsumption" class="block text-sm font-bold text-gray-700">Consumo diario total:</label>
-                        <span id="totalDailyConsumption" class="mt-1 text-lg font-bold text-rederar-blue">0.00 kWh</span>
-                    </div>
-                    <div>
-                        <label for="autonomyDays" class="block text-sm font-medium text-gray-700">Días de autonomía de la batería</label>
-                        <input type="number" id="autonomyDays" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="e.g., 2">
-                    </div>
-                    <div>
-                        <label for="provinceOffGrid" class="block text-sm font-medium text-gray-700">Provincia</label>
-                        <select id="provinceOffGrid" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border">
-                            <option value="">Selecciona una provincia</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div id="offGridResults" class="hidden mt-6 transition-all duration-300">
-                    <div id="offGridErrorMessage" class="text-red-600 text-sm font-semibold mb-2"></div>
-                    <div id="offGridSuccessContent" class="space-y-3 p-4 bg-blue-50 rounded-lg border border-blue-300">
-                        <!-- Results will be dynamically populated here -->
-                    </div>
-                </div>
-                
-                <div class="mt-6 flex flex-col gap-2">
-                    <button id="calculateOffGridBtn" onclick="c2()" disabled class="w-full bg-rederar-blue hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 disabled-button">
-                        Calcular Sistema Off-Grid
-                    </button>
-                    <!-- Mensaje para indicar al usuario que debe completar los datos del cliente -->
-                    <p class="text-sm text-gray-500 text-center">Para calcular el sistema debe tener cargado datos del cliente.</p>
-                </div>
-                <button onclick="s2()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 mt-4">
-                    <i class="fab fa-whatsapp mr-2"></i> Solicitar Cotización
-                </button>
+        <!-- Pie de página -->
+        <div class="bg-blue-900 text-white text-center py-2">
+            <div class="flex items-center justify-center text-xs">
+                <span>Sistema creado por REDERAR,</span>
+                <img src="https://i.postimg.cc/S2hzCGwP/LOGO-2024.jpg" alt="Logo de Rederar" class="h-4 w-4 rounded-sm mx-1" onerror="this.onerror=null; this.src='https://placehold.co/16x16?text=R';">
+                <span>© todos los derechos reservados.</span>
             </div>
         </div>
     </div>
 
-    <!-- Footer with Logo and Copyright -->
-    <footer class="mt-10 py-6 text-center text-white bg-rederar-blue rounded-xl max-w-7xl mx-auto shadow-inner border border-blue-600">
-        <div class="flex justify-center items-center mb-2">
-            <!-- Logo de REDERAR en el pie de página -->
-            <img src="https://i.postimg.cc/Pv5PgCWs/LOGO-2024.jpg" alt="Logo de REDERAR" class="h-16 object-contain rounded-full">
-        </div>
-        <p class="text-sm text-gray-300">&copy; 2024 REDERAR. Todos los derechos reservados.</p>
-    </footer>
-
-    <!-- Custom Alert Modal -->
-    <div id="custom-alert-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden">
-        <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full mx-4">
-            <h3 class="text-lg font-bold text-gray-800 mb-4">Aviso</h3>
-            <p id="custom-alert-message" class="text-gray-700 mb-6"></p>
-            <button onclick="closeAlert()" class="w-full bg-rederar-blue hover:bg-blue-700 text-white font-bold py-2 rounded-full transition duration-300">
-                Aceptar
-            </button>
+    <!-- Modal de Bloqueo de Software -->
+    <div id="software-lock-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white p-8 rounded-lg text-center shadow-2xl w-full max-w-sm border-2 border-red-600">
+            <h2 class="text-3xl font-bold text-red-600 mb-4">Software Bloqueado</h2>
+            <p id="lock-message" class="text-lg text-gray-700 mb-6">El periodo de uso del software ha finalizado. Por favor, ingresa la contraseña para desbloquearlo.</p>
+            <div id="unlock-form" class="flex flex-col space-y-4">
+                <input type="password" id="unlock-code" placeholder="Ingresa la clave aquí" class="w-full p-3 rounded-lg border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <button id="unlock-button" class="w-full p-3 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold transition-colors">Desbloquear</button>
+            </div>
         </div>
     </div>
 
-    <script>
-        // --- CÓDIGO JS OFUSCADO ---
-        // Este código realiza las mismas funciones que el original, pero las variables y nombres de funciones
-        // han sido cambiados para dificultar su lectura y comprensión.
+    <!-- Modal de Mensajes -->
+    <div id="message-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-6 rounded-xl shadow-xl w-80">
+            <h3 class="text-lg font-bold mb-4">Mensaje del Sistema</h3>
+            <p id="modal-message-text" class="text-gray-700 mb-6"></p>
+            <div class="flex justify-end">
+                <button id="close-modal" class="px-4 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700 transition-colors">Cerrar</button>
+            </div>
+        </div>
+    </div>
 
-        const d1 = {
-            'buenos-aires': { name: 'Buenos Aires', hsp: 4.5, localidades: ['La Plata', 'Mar del Plata', 'Bahía Blanca', 'Tandil', 'Zárate', 'San Nicolás', 'Junín', 'Olavarría', 'Pergamino'] },
-            'cordoba': { name: 'Córdoba', hsp: 4.9, localidades: ['Córdoba Capital', 'Villa Carlos Paz', 'Río Cuarto', 'San Francisco', 'Villa María', 'Río Tercero'] },
-            'santa-fe': { name: 'Santa Fe', hsp: 4.7, localidades: ['Santa Fe Capital', 'Rosario', 'Reconquista', 'Venado Tuerto', 'Rafaela', 'Esperanza'] },
-            'mendoza': { name: 'Mendoza', hsp: 5.6, localidades: ['Mendoza Capital', 'San Rafael', 'Malargüe', 'General Alvear', 'Tunuyán', 'Godoy Cruz'] },
-            'tucuman': { name: 'Tucumán', hsp: 5.1, localidades: ['San Miguel de Tucumán', 'Yerba Buena', 'Concepción', 'Tafí Viejo', 'Alderetes'] },
-            'entre-rios': { name: 'Entre Ríos', hsp: 4.8, localidades: ['Paraná', 'Concordia', 'Gualeguaychú', 'Villaguay', 'La Paz', 'Victoria'] },
-            'salta': { name: 'Salta', hsp: 5.5, localidades: ['Salta Capital', 'Orán', 'Cafayate', 'Tartagal', 'Metán', 'Rosario de la Frontera'] },
-            'corrientes': { name: 'Corrientes', hsp: 4.6, localidades: ['Corrientes Capital', 'Goya', 'Paso de los Libres', 'Mercedes', 'Curuzú Cuatiá', 'Santo Tomé'] },
-            'misiones': { name: 'Misiones', hsp: 4.6, localidades: ['Posadas', 'Iguazú', 'Oberá', 'Eldorado', 'Apóstoles', 'Puerto Rico'] },
-            'chaco': { name: 'Chaco', hsp: 4.9, localidades: ['Resistencia', 'Sáenz Peña', 'Villa Ángela', 'Castelli', 'Charata', 'Quitilipi'] },
-            'santiago-del-estero': { name: 'Santiago del Estero', hsp: 5.3, localidades: ['Santiago del Estero Capital', 'La Banda', 'Termas de Río Hondo', 'Frías', 'Loreto'] },
-            'san-juan': { name: 'San Juan', hsp: 5.8, localidades: ['San Juan Capital', 'Rivadavia', 'Caucete', 'Jáchal', 'Albardón', 'San Martín'] },
-            'san-luis': { name: 'San Luis', hsp: 5.2, localidades: ['San Luis Capital', 'Villa Mercedes', 'Merlo', 'La Punta', 'Santa Rosa del Conlara'] },
-            'catamarca': { name: 'Catamarca', hsp: 5.4, localidades: ['San Fernando del Valle de Catamarca', 'Andalgalá', 'Tinogasta', 'Belén', 'Recreo', 'Fray Mamerto Esquiú'] },
-            'la-rioja': { name: 'La Rioja', hsp: 5.7, localidades: ['La Rioja Capital', 'Chilecito', 'Arauco', 'Chamical', 'Chepes'] },
-            'jujuy': { name: 'Jujuy', hsp: 5.6, localidades: ['San Salvador de Jujuy', 'Palpalá', 'La Quiaca', 'Perico', 'Libertador General San Martín'] },
-            'la-pampa': { name: 'La Pampa', hsp: 5.1, localidades: ['Santa Rosa', 'General Pico', 'Toay', 'Eduardo Castex', 'Victorica'] },
-            'neuquen': { name: 'Neuquén', hsp: 4.2, localidades: ['Neuquén Capital', 'San Martín de los Andes', 'Villa La Angostura', 'Cutral Có', 'Plottier'] },
-            'rio-negro': { name: 'Río Negro', hsp: 4.4, localidades: ['Viedma', 'Bariloche', 'General Roca', 'Cipolletti', 'San Antonio Oeste'] },
-            'chubut': { name: 'Chubut', hsp: 4.3, localidades: ['Rawson', 'Comodoro Rivadavia', 'Puerto Madryn', 'Trelew', 'Esquel'] },
-            'santa-cruz': { name: 'Santa Cruz', hsp: 3.9, localidades: ['Río Gallegos', 'Caleta Olivia', 'El Calafate', 'Pico Truncado', 'Las Heras'] },
-            'tierra-del-fuego': { name: 'Tierra del Fuego', hsp: 3.5, localidades: ['Ushuaia', 'Río Grande', 'Tolhuin'] },
-            'formosa': { name: 'Formosa', hsp: 4.8, localidades: ['Formosa Capital', 'Clorinda', 'El Colorado', 'Pirané', 'Ingeniero Juárez'] }
+    <!-- Nuevo: Modal para agregar electrodoméstico "Otro" -->
+    <div id="custom-appliance-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-sm">
+            <h3 class="text-lg font-bold mb-4">Añadir Electrodoméstico Personalizado</h3>
+            <div class="space-y-4">
+                <div>
+                    <label for="customApplianceName" class="block text-sm font-medium text-gray-700">Nombre</label>
+                    <input type="text" id="customApplianceName" placeholder="e.g., Bomba para Piscina" class="mt-1 w-full p-3 rounded-lg border border-gray-300" />
+                </div>
+                <div>
+                    <label for="customAppliancePower" class="block text-sm font-medium text-gray-700">Potencia (W)</label>
+                    <input type="number" id="customAppliancePower" placeholder="e.g., 500" class="mt-1 w-full p-3 rounded-lg border border-gray-300" />
+                </div>
+                <div>
+                    <label for="customApplianceConsumption" class="block text-sm font-medium text-gray-700">Consumo por hora (Wh)</label>
+                    <input type="number" id="customApplianceConsumption" placeholder="e.g., 250" class="mt-1 w-full p-3 rounded-lg border border-gray-300" />
+                </div>
+            </div>
+            <div class="flex justify-end space-x-4 mt-6">
+                <button id="cancel-custom-appliance" class="px-4 py-2 rounded-lg bg-gray-300 text-gray-700 font-bold hover:bg-gray-400 transition-colors">Cancelar</button>
+                <button id="add-custom-appliance" class="px-4 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700 transition-colors">Añadir</button>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module">
+        // Variables de estado
+        let systemType = 'clientData';
+        let isSessionActive = true;
+        let isClientDataComplete = false;
+        let appliances = [];
+
+        // Nuevo: Variables de bloqueo de software basadas en tiempo de uso
+        let isSoftwareLocked = false;
+        const firstUnlockCode = 'CLAVE1'; 
+        let isFirstUnlockCompleted = false;
+        const futureKeys = ['V1E9K6K6O1', '204GGAGAO0', 'CD11JSJSVD', '43R3LOLO53', '62EUQ6Q6M2', 'WRVN1K1KDR', 'OFZ3DCDCPF', 'AWGC4I4ISW', 'O1513K3K71', 'OJB3TSTSLJ', 'YA2QMYMYEA', '8JZJ5C5CPJ', 'WFNZH0H0PF', 'UO84C2C20O', 'CTHPFOFOFT', 'S3FFHGHG53', 'QIMQIQIQ6I', '87RVPWPWX7', 'OFZ7XCXCTF', 'I8CO8U8UG8', 'WD1LRSRSVD', '473ZL8L8X7', 'M6Q6YMYMI6', 'C3FV9G9G13', 'KZRRTOTO5Z', 'ISW8OUOUWS', 'SDDL7474RD', '0VVFHKHKDV', 'EYUQEEEEQY', '0FBRLOLOPF', '43R3LOLO53', 'U4SKS2S2K4', 'KT5D3G3GBT', '0NJNL4L4HN', '66EMA6A6I6', 'WFNZH0H0PF', 'SBN7DWDWXB', 'AC0SKIKICC', 'ODDPN4N4VD', 'OFZ7XCXCTF', '2EYM6262AE', 'CFNJP0P0TF', '0FBRLOLOPF', '2KK0WAWA4K', 'SLLD7K7KJL', 'GRVZTKTKDR', 'U222MUMUM2', 'WJNR1414LJ', 'GBBJ9K9KXB', '2KK0WAWA4K'];
+        let futureKeySchedule = [];
+
+        // Generar un ID de dispositivo único
+        const deviceId = crypto.randomUUID();
+
+        // Base de datos simulada para HPS (Horas Pico Solar) y equipamiento
+        const hpsData = {
+            "Buenos Aires": 3.8, "Catamarca": 4.5, "Chaco": 4.1, "Chubut": 3.6, "Ciudad Autónoma de Buenos Aires": 3.7, "Córdoba": 4.3, "Corrientes": 4.0, "Entre Ríos": 3.9, "Formosa": 4.2, "Jujuy": 4.6, "La Pampa": 4.1, "La Rioja": 4.4, "Mendoza": 4.7, "Misiones": 3.5, "Neuquén": 4.2, "Río Negro": 4.0, "Salta": 4.5, "San Juan": 4.8, "San Luis": 4.3, "Santa Cruz": 3.3, "Santa Fe": 4.0, "Santiago del Estero": 4.4, "Tierra del Fuego": 2.8, "Tucumán": 4.2
         };
-        const p1 = 550; // W
-        const i1 = 2; // kW
-        const i2 = [2, 3, 4, 5, 6, 8, 10]; // Common inverter sizes in kW
-        const a2 = {
-            'heladera': { name: 'Heladera', consumption: 100, hours: 24, quantity: 1 },
-            'televisor-led': { name: 'Televisor LED (42")', consumption: 80, hours: 4, quantity: 1 },
-            'luces-led': { name: 'Luces LED (10W)', consumption: 10, hours: 6, quantity: 5 },
-            'notebook': { name: 'Notebook', consumption: 50, hours: 8, quantity: 1 },
-            'microondas': { name: 'Microondas', consumption: 1200, hours: 0.25, quantity: 1 },
-            'bomba-agua': { name: 'Bomba de agua', consumption: 500, hours: 1, quantity: 1 },
-            'cargador-celular': { name: 'Cargador de celular', consumption: 10, hours: 3, quantity: 1 }
+        const panelData = { 'tipo': 'JA Solar 550W', 'potencia': 550 };
+        const inverterData = {
+            'onGrid': [{ 'potencia': 2500, 'nombre': 'Inversor On-Grid de 2.5 kW' }, { 'potencia': 3000, 'nombre': 'Inversor On-Grid de 3 kW' }, { 'potencia': 4000, 'nombre': 'Inversor On-Grid de 4 kW' }, { 'potencia': 5000, 'nombre': 'Inversor On-Grid de 5 kW' }, { 'potencia': 8000, 'nombre': 'Inversor On-Grid de 8 kW' }, { 'potencia': 10000, 'nombre': 'Inversor On-Grid de 10 kW' }, { 'potencia': 15000, 'nombre': 'Inversor On-Grid de 15 kW' }],
+            'offGrid': [{ 'potencia': 3000, 'nombre': 'Inversor Off-Grid de 3 kW' }, { 'potencia': 5000, 'nombre': 'Inversor Off-Grid de 5 kW' }, { 'potencia': 8000, 'nombre': 'Inversor Off-Grid de 8 kW' }]
         };
-        function sA(m) {
-            document.getElementById('custom-alert-message').innerText = m;
-            document.getElementById('custom-alert-modal').classList.remove('hidden');
+        // Baterías actualizadas con la información del usuario
+        const batteryData = {
+            'leadAcid': {
+                name: 'Batería de Plomo-Ácido',
+                dod: 0.5,
+                voltages: [
+                    { v: 12, capacitiesAh: [100, 200, 250] },
+                    { v: 24, capacitiesAh: [100, 200, 300, 400] },
+                    { v: 48, capacitiesAh: [200, 300, 400, 500] }
+                ]
+            },
+            'lifepo4': {
+                name: 'Batería de Litio (LiFePO4)',
+                dod: 0.9,
+                voltages: [
+                    { v: 12, capacitiesAh: [100, 200, 250] },
+                    { v: 24, capacitiesAh: [100, 200, 300] },
+                    { v: 48, capacitiesAh: [200, 300, 400] }
+                ]
+            }
+        };
+
+        // Datos de electrodomésticos
+        const applianceList = [
+            { name: "Afeitadora", potencia: 5, consumo: 5 }, { name: "Aire acondicionado de 2200 frigorías F/C", potencia: 1350, consumo: 1013 }, { name: "Aire acondicionado de 3500 frigorías F/C", potencia: 2150, consumo: 1613 }, { name: "Aire acondicionado de 4500 frigorías F/C", potencia: 2800, consumo: 2153 }, { name: "Aire acondicionado de 2200 frigorías F/C - Inverter", potencia: 877.5, consumo: 658 }, { name: "Aire acondicionado de 3500 frigorías F/C - Inverter", potencia: 1397.5, consumo: 1048 }, { name: "Aire acondicionado de 4500 frigorías F/C - Inverter", potencia: 1820, consumo: 1365 }, { name: "Anafe vitrocerámica con hornalla de 120 mm de diámetro", potencia: 750, consumo: 750 }, { name: "Anafe vitrocerámica con hornalla de 140 mm de diámetro", potencia: 1250, consumo: 1250 }, { name: "Anafe vitrocerámica con hornalla de 175 mm de diámetro", potencia: 1500, consumo: 1500 }, { name: "Anafe vitrocerámica con hornalla de 200 mm de diámetro", potencia: 1800, consumo: 1800 }, { name: "Anafe vitrocerámica con hornalla de 215 mm de diámetro", potencia: 2110, consumo: 2110 }, { name: "Anafe vitrocerámica con hornalla de 220 mm de diámetro", potencia: 2350, consumo: 2350 }, { name: "Anafe resistivo con hornalla de 150 mm de diámetro", potencia: 1000, consumo: 1000 }, { name: "Anafe resistivo con hornalla de 190 mm de diámetro", potencia: 2000, consumo: 2000 }, { name: "Aspiradora", potencia: 1200, consumo: 1200 }, { name: "Batidora de mano", potencia: 300, consumo: 300 }, { name: "Bomba de agua de 1/2 HP", potencia: 380, consumo: 380 }, { name: "Bomba de agua de 3/4 HP", potencia: 570, consumo: 570 }, { name: "Cafetera de filtro eléctrica", potencia: 900, consumo: 900 }, { name: "Caloventilador chico c/termostato", potencia: 1500, consumo: 1500 }, { name: "Cargador de celular genérico", potencia: 5, consumo: 5 }, { name: "Computadora (sólo la CPU)", potencia: 200, consumo: 200 }, { name: "Extractor de aire para cocina o baño - 80 m3/hora", potencia: 12, consumo: 12 }, { name: "Extractor de aire para cocina o baño - 200 m3/hora", potencia: 20, consumo: 20 }, { name: "Extractor de aire para cocina o baño - 1200 m3/hora", potencia: 50, consumo: 50 }, { name: "Estufa halógena de 3 velas c/termostato", potencia: 1500, consumo: 1500 }, { name: "Estufa de cuarzo c/termostato", potencia: 1500, consumo: 1500 }, { name: "Freezer", potencia: 250, consumo: 113 }, { name: "Heladera", potencia: 150, consumo: 75 }, { name: "Heladera con freezer", potencia: 200, consumo: 90 }, { name: "Heladera con freezer - Inverter", potencia: 200, consumo: 35 }, { name: "Horno eléctrico de 25 a 30 litros c/termostato", potencia: 1500, consumo: 750 }, { name: "Horno eléctrico de 73 litros c/termostato, para empotrar", potencia: 2450, consumo: 1225 }, { name: "Lámpara de bajo consumo de 11W", potencia: 11, consumo: 11 }, { name: "Lámpara de bajo consumo de 15W", potencia: 15, consumo: 15 }, { name: "Lámpara de bajo consumo de 20W", potencia: 20, consumo: 20 }, { name: "Lámpara halógena de 100 W", potencia: 100, consumo: 100 }, { name: "Lámpara halógena de 40 W", potencia: 40, consumo: 40 }, { name: "Lámpara halógena de 60 W", potencia: 60, consumo: 60 }, { name: "Lámpara LED de 5 W", potencia: 5, consumo: 5 }, { name: "Lámpara LED de 9 W", potencia: 9, consumo: 9 }, { name: "Lámpara LED de 11 W", potencia: 11, consumo: 11 }, { name: "Lavarropas automático de 5 kg con calentamiento de agua", potencia: 2500, consumo: 875 }, { name: "Lavarropas automático de 5 kg", potencia: 500, consumo: 175 }, { name: "Lavarropas semi-automático de 5 kg", potencia: 200, consumo: 80 }, { name: "Lavavajilla para 12 cubiertos", potencia: 1500, consumo: 1125 }, { name: "Licuadora de mano o de pie", potencia: 600, consumo: 600 }, { name: "Lustraspiradora", potencia: 800, consumo: 720 }, { name: "Microondas", potencia: 800, consumo: 640 }, { name: "Minicomponentes", potencia: 60, consumo: 60 }, { name: "Monitor LED de 19\"", potencia: 22, consumo: 22 }, { name: "Notebook", potencia: 22, consumo: 22 }, { name: "Pava eléctrica de 1,7 litros", potencia: 2000, consumo: 2000 }, { name: "Plancha", potencia: 1500, consumo: 750 }, { name: "Planchita de pelo o buclera", potencia: 40, consumo: 40 }, { name: "Radiador eléctrico mediano c/termostato", potencia: 1500, consumo: 1500 }, { name: "Reproductor de DVD", potencia: 15, consumo: 15 }, { name: "Secador de cabellos", potencia: 2000, consumo: 2000 }, { name: "Secarropas a calor", potencia: 950, consumo: 950 }, { name: "Secarropas centrífugo", potencia: 380, consumo: 380 }, { name: "Televisor color de tubo fluorescente de 21\"", potencia: 75, consumo: 75 }, { name: "Televisor color de tubo fluorescente de 25\"", potencia: 155, consumo: 155 }, { name: "Televisor color de tubo fluorescente de 29\" a 34\"", potencia: 175, consumo: 175 }, { name: "Televisor LED de 40\"", potencia: 180, consumo: 180 }, { name: "Televisor LED 24\"", potencia: 40, consumo: 40 }, { name: "Televisor LED 32\" a 50''", potencia: 90, consumo: 90 }, { name: "Termotanque eléctrico c/termostato", potencia: 1500, consumo: 1500 }, { name: "Tostadora", potencia: 950, consumo: 950 }, { name: "Tubo fluorescente de 18 W", potencia: 18, consumo: 18 }, { name: "Tubo fluorescente de 36 W", potencia: 36, consumo: 36 }, { name: "Tubo fluorescente de 58 W", potencia: 58, consumo: 58 }, { name: "Ventilador de techo", potencia: 60, consumo: 60 }, { name: "Ventilador de pie", potencia: 90, consumo: 90 }, { name: "Vitroconvector 54 x 57 cm c/termostato", potencia: 1000, consumo: 1000 }, { name: "Vitroconvector 86 x 58 cm c/termostato", potencia: 2000, consumo: 2000 }, { name: "Vitroconvector 54 x 57 cm c/termostato", potencia: 1000, consumo: 1000 }, { name: "otro", potencia: 0, consumo: 0 }
+        ];
+
+        // Elementos del DOM
+        const sidebarButtons = document.querySelectorAll('button[id^="btn-"]');
+        const sections = document.querySelectorAll('[id$="-section"]');
+        const clientNameInput = document.getElementById('clientName');
+        const clientAddressInput = document.getElementById('clientAddress');
+        const clientProvinceSelect = document.getElementById('clientProvince');
+        const clientDataMessage = document.getElementById('clientDataMessage');
+        const softwareLockModal = document.getElementById('software-lock-modal');
+        const lockMessage = document.getElementById('lock-message');
+        const unlockForm = document.getElementById('unlock-form');
+        const unlockCodeInput = document.getElementById('unlock-code');
+        const unlockButton = document.getElementById('unlock-button');
+        const messageModal = document.getElementById('message-modal');
+        const modalMessageText = document.getElementById('modal-message-text');
+        const closeModalButton = document.getElementById('close-modal');
+
+        // Elementos de On-Grid
+        const annualKwhInput = document.getElementById('annualKwh');
+        const calculateOnGridButton = document.getElementById('calculate-onGrid');
+        const onGridResultDiv = document.getElementById('onGrid-result');
+        const onGridDataIncompleteMessage = document.getElementById('onGridDataIncomplete');
+
+        // Elementos de Off-Grid
+        const applianceSelect = document.getElementById('applianceSelect');
+        const addApplianceBtn = document.getElementById('addApplianceBtn');
+        const appliancesContainer = document.getElementById('appliances-container');
+        const daysOfAutonomyInput = document.getElementById('daysOfAutonomy');
+        const calculateOffGridButton = document.getElementById('calculate-offGrid');
+        const offGridResultDiv = document.getElementById('offGrid-result');
+        const offGridDataIncompleteMessage = document.getElementById('offGridDataIncomplete');
+        // Nuevos elementos para el modal "Otro"
+        const customApplianceModal = document.getElementById('custom-appliance-modal');
+        const customApplianceNameInput = document.getElementById('customApplianceName');
+        const customAppliancePowerInput = document.getElementById('customAppliancePower');
+        const customApplianceConsumptionInput = document.getElementById('customApplianceConsumption');
+        const addCustomApplianceBtn = document.getElementById('add-custom-appliance');
+        const cancelCustomApplianceBtn = document.getElementById('cancel-custom-appliance');
+
+
+        // Elementos de Termotanque
+        const calculateTermotanqueButton = document.getElementById('calculate-termotanque');
+        const termotanqueResultDiv = document.getElementById('termotanque-result');
+        const clientDataIncompleteMessage = document.getElementById('clientDataIncomplete');
+        const personCountInput = document.getElementById('personCount');
+        const hasMinorsInputs = document.querySelectorAll('input[name="hasMinors"]');
+        const hasPressurizerInputs = document.querySelectorAll('input[name="hasPressurizer"]');
+        const waterTypeSelect = document.getElementById('waterType');
+
+        // Firebase-related variables
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot, Timestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app, auth, db;
+        let userId = null;
+        let userDocRef = null;
+        let sessionDocRef = null;
+        let activationDocRef = null;
+        let scheduleDocRef = null;
+
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (error) {
+            console.error("Error al inicializar Firebase:", error);
         }
-        function closeAlert() {
-            document.getElementById('custom-alert-modal').classList.add('hidden');
-        }
-        document.addEventListener('DOMContentLoaded', () => {
-            p1_1('provinceOnGrid');
-            p1_1('provinceOffGrid');
-            p2_1();
-            const e = document.querySelectorAll('.client-input');
-            e.forEach(i => {
-                i.addEventListener('input', c4);
-            });
-            c4();
-        });
-        function c4() {
-            const n = document.getElementById('clientName').value.trim();
-            const t = document.getElementById('clientPhone').value.trim();
-            const d = document.getElementById('clientAddress').value.trim();
-            const c = n !== '' && t !== '' && d !== '';
-            const b1 = document.getElementById('calculateOnGridBtn');
-            const b2 = document.getElementById('calculateOffGridBtn');
-            if (c) {
-                b1.disabled = false;
-                b1.classList.remove('disabled-button');
-                b2.disabled = false;
-                b2.classList.remove('disabled-button');
+
+        // Función para mostrar un modal
+        const showSystemMessage = (message) => {
+            modalMessageText.textContent = message;
+            messageModal.classList.remove('hidden');
+        };
+
+        const showLockModal = (message, showUnlockForm) => {
+            lockMessage.textContent = message;
+            if (showUnlockForm) {
+                unlockForm.classList.remove('hidden');
             } else {
-                b1.disabled = true;
-                b1.classList.add('disabled-button');
-                b2.disabled = true;
-                b2.classList.add('disabled-button');
+                unlockForm.classList.add('hidden');
             }
-        }
-        function p1_1(s) {
-            const p = document.getElementById(s);
-            if (!p) return;
-            p.innerHTML = '<option value="">Selecciona una provincia</option>';
-            for (const k in d1) {
-                const o = document.createElement('option');
-                o.value = k;
-                o.textContent = d1[k].name;
-                p.appendChild(o);
-            }
-        }
-        function p2_1() {
-            const p = document.getElementById('predefinedAppliances');
-            if (!p) return;
-            for (const k in a2) {
-                const o = document.createElement('option');
-                o.value = k;
-                o.textContent = a2[k].name;
-                p.appendChild(o);
-            }
-        }
-        function s3(e) {
-            const a = e.target.value;
-            if (!a) {
-                document.getElementById('applianceName').value = '';
-                document.getElementById('applianceQuantity').value = '';
-                document.getElementById('applianceConsumption').value = '';
-                document.getElementById('applianceHours').value = '';
+            softwareLockModal.classList.remove('hidden');
+        };
+
+        const hideLockModal = () => {
+            softwareLockModal.classList.add('hidden');
+        };
+
+        // Función para cambiar de sección
+        const showSection = (type) => {
+            if (!isSessionActive || isSoftwareLocked) {
                 return;
             }
-            const o = a2[a];
-            if (o) {
-                document.getElementById('applianceName').value = o.name;
-                document.getElementById('applianceQuantity').value = o.quantity;
-                document.getElementById('applianceConsumption').value = o.consumption;
-                document.getElementById('applianceHours').value = o.hours;
-            }
-        }
-        function c1() {
-            const k = parseFloat(document.getElementById('annualKwh').value);
-            const p = document.getElementById('provinceOnGrid').value;
-            const r = document.getElementById('onGridResults');
-            const m = document.getElementById('onGridErrorMessage');
-            const c = document.getElementById('onGridSuccessContent');
-            if (isNaN(k) || k <= 0 || !p) {
-                r.classList.remove('hidden');
-                m.innerText = 'Por favor, ingresa un consumo anual válido y selecciona una provincia.';
-                c.classList.add('hidden');
-                return false;
-            }
-            m.innerText = '';
-            c.classList.remove('hidden');
-            r.classList.remove('hidden');
-            const s = 0.85;
-            const h = d1[p].hsp;
-            const i3 = (k / (h * 365 * s));
-            const n = Math.ceil((i3 * 1000) / p1);
-            const t = (n * p1 / 1000).toFixed(2);
-            let i4 = i2.find(z => z >= i3);
-            if (!i4 || i4 < i1) {
-                i4 = i2.find(z => z >= i1);
-            }
-            const g = t * h * 365 * s;
-            c.innerHTML = `
-                <p id="onGridPanelResult" class="text-rederar-blue font-semibold">Cantidad de paneles solares (550Wp): ${n} (Potencia total: ${t} kWp)</p>
-                <p id="onGridInverterResult" class="text-rederar-blue font-semibold">Tamaño del inversor On-Grid: ${i4} kW</p>
-                <p id="onGridGenerationResult" class="text-rederar-blue font-semibold">Este sistema podría generar hasta ${g.toFixed(0)} kWh anualmente, cubriendo tu consumo actual.</p>
-                <p class="text-gray-600 italic mt-4">**Importante:** Esta es una estimación inicial. Los valores pueden variar según las condiciones reales y el diseño final del sistema.</p>
-            `;
-            return true;
-        }
-        function s1() {
-            const n = document.getElementById('clientName').value.trim();
-            const t = document.getElementById('clientPhone').value.trim();
-            const d = document.getElementById('clientAddress').value.trim();
-            if (!n || !t || !d) {
-                sA('Por favor, completa los datos del cliente antes de solicitar una cotización.');
-                return;
-            }
-            if (!c1()) {
-                return;
-            }
-            const k = document.getElementById('annualKwh').value;
-            const p = document.getElementById('provinceOnGrid').options[document.getElementById('provinceOnGrid').selectedIndex].text;
-            const pr = document.getElementById('onGridPanelResult').innerText;
-            const ir = document.getElementById('onGridInverterResult').innerText;
-            const gr = document.getElementById('onGridGenerationResult').innerText;
-            const m = `*SOLICITUD DE COTIZACIÓN ON-GRID*\n\n` +
-                `*Datos del Cliente:*\n` +
-                `Nombre: ${n}\n` +
-                `Teléfono: ${t}\n` +
-                `Dirección: ${d}\n` +
-                `Provincia: ${p}\n\n` +
-                `*Dimensionamiento Inicial:*\n` +
-                `Consumo anual: ${k} kWh\n` +
-                `${pr}\n` +
-                `${ir}\n` +
-                `${gr}\n`;
-            const em = encodeURIComponent(m);
-            const w = `https://api.whatsapp.com/send?phone=+543434802264&text=${em}`;
-            window.open(w, '_blank');
-        }
-        function c2() {
-            const t = document.getElementById('totalDailyConsumption');
-            const d = parseFloat(t.innerText.replace(' kWh', ''));
-            const a = parseFloat(document.getElementById('autonomyDays').value);
-            const p = document.getElementById('provinceOffGrid').value;
-            const r = document.getElementById('offGridResults');
-            const m = document.getElementById('offGridErrorMessage');
-            const c = document.getElementById('offGridSuccessContent');
-            if (isNaN(d) || d <= 0 || isNaN(a) || a <= 0 || !p) {
-                r.classList.remove('hidden');
-                m.innerText = 'Por favor, agrega al menos un artefacto y completa todos los campos con valores válidos.';
-                c.classList.add('hidden');
-                return false;
-            }
-            m.innerText = '';
-            c.classList.remove('hidden');
-            r.classList.remove('hidden');
-            const s = 0.8;
-            const b = 0.85;
-            const h = d1[p].hsp;
-            const bz = ((d * a) / b).toFixed(2);
-            const ps = ((d / (h * s)) * 1.2);
-            const np = Math.ceil((ps * 1000) / p1);
-            const tp = (np * p1 / 1000).toFixed(2);
-            let i3 = i2.find(z => z >= ps);
-            if (!i3 || i3 < i1) {
-                i3 = i2.find(z => z >= i1);
-            }
-            c.innerHTML = `
-                <p id="offGridPanelResult" class="text-rederar-blue font-semibold">Cantidad de paneles solares (550Wp): ${np} (Potencia total: ${tp} kWp)</p>
-                <p id="offGridInverterResult" class="text-rederar-blue font-semibold">Tamaño del inversor Off-Grid: ${i3} kW</p>
-                <p id="offGridBatteryResult" class="text-rederar-blue font-semibold">Capacidad del banco de baterías: ${bz} kWh</p>
-                <p class="text-gray-600 italic mt-4">**Importante:** Esta es una estimación inicial. Los valores pueden variar según las condiciones reales y el diseño final del sistema.</p>
-            `;
-            return true;
-        }
-        function s2() {
-            const n = document.getElementById('clientName').value.trim();
-            const t = document.getElementById('clientPhone').value.trim();
-            const d = document.getElementById('clientAddress').value.trim();
-            if (!n || !t || !d) {
-                sA('Por favor, completa los datos del cliente antes de solicitar una cotización.');
-                return;
-            }
-            if (!c2()) {
-                return;
-            }
-            const tdc = document.getElementById('totalDailyConsumption');
-            const dk = parseFloat(tdc.innerText.replace(' kWh', ''));
-            const a = document.getElementById('autonomyDays').value;
-            const p = document.getElementById('provinceOffGrid').options[document.getElementById('provinceOffGrid').selectedIndex].text;
-            const pr = document.getElementById('offGridPanelResult').innerText;
-            const ir = document.getElementById('offGridInverterResult').innerText;
-            const br = document.getElementById('offGridBatteryResult').innerText;
-            let al = '';
-            const tr = document.querySelectorAll('#artifactTableBody tr');
-            tr.forEach(r => {
-                const c = r.querySelectorAll('td');
-                const n = c[0].innerText;
-                const q = c[1].innerText;
-                const co = c[2].innerText;
-                const h = c[3].innerText;
-                const dc = c[4].innerText;
-                al += ` - ${q}x ${n} (${co}W, ${h}hs/día) = ${dc}\n`;
+            sections.forEach(section => {
+                section.classList.add('hidden');
             });
-            if (al === '') {
-                al = 'No se han agregado artefactos.\n';
+            document.getElementById(type + '-section').classList.remove('hidden');
+
+            sidebarButtons.forEach(btn => {
+                btn.classList.remove('bg-blue-800', 'text-white');
+                btn.classList.add('text-gray-300', 'hover:text-white');
+            });
+            document.getElementById('btn-' + type).classList.remove('text-gray-300', 'hover:text-white');
+            document.getElementById('btn-' + type).classList.add('bg-blue-800', 'text-white');
+
+            systemType = type;
+            updateButtonStates();
+        };
+
+        // Función para actualizar el estado de los datos del cliente
+        const updateClientDataState = () => {
+            if (clientNameInput.value && clientAddressInput.value && clientProvinceSelect.value) {
+                isClientDataComplete = true;
+                clientDataMessage.classList.remove('hidden');
+            } else {
+                isClientDataComplete = false;
+                clientDataMessage.classList.add('hidden');
             }
-            const m = `*SOLICITUD DE COTIZACIÓN OFF-GRID*\n\n` +
-                `*Datos del Cliente:*\n` +
-                `Nombre: ${n}\n` +
-                `Teléfono: ${t}\n` +
-                `Dirección: ${d}\n` +
-                `Provincia: ${p}\n\n` +
-                `*Artefactos a Suministrar:*\n` +
-                al +
-                `*Dimensionamiento Inicial:*\n` +
-                `Consumo diario total: ${dk.toFixed(2)} kWh\n` +
-                `Autonomía de baterías: ${a} días\n` +
-                `${pr}\n` +
-                `${ir}\n` +
-                `${br}\n`;
-            const em = encodeURIComponent(m);
-            const w = `https://api.whatsapp.com/send?phone=+543434802264&text=${em}`;
-            window.open(w, '_blank');
-        }
-        function a1() {
-            const n = document.getElementById('applianceName');
-            const q = document.getElementById('applianceQuantity');
-            const co = document.getElementById('applianceConsumption');
-            const h = document.getElementById('applianceHours');
-            const v_n = n.value.trim();
-            const v_q = parseFloat(q.value);
-            const v_co = parseFloat(co.value);
-            const v_h = parseFloat(h.value);
-            if (!v_n || isNaN(v_q) || v_q <= 0 || isNaN(v_co) || v_co <= 0 || isNaN(v_h) || v_h <= 0) {
-                sA('Por favor, completa todos los campos con valores válidos para agregar un artefacto.');
+            updateButtonStates();
+        };
+        
+        // Función para actualizar el estado de todos los botones de cálculo
+        const updateButtonStates = () => {
+            // Estado del botón de On-Grid
+            const isAnnualKwhFilled = annualKwhInput.value !== '';
+            if (isClientDataComplete && isAnnualKwhFilled) {
+                calculateOnGridButton.disabled = false;
+                calculateOnGridButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                calculateOnGridButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                onGridDataIncompleteMessage.classList.add('hidden');
+            } else {
+                calculateOnGridButton.disabled = true;
+                calculateOnGridButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                calculateOnGridButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+                if (systemType === 'onGrid' && (!isClientDataComplete || !isAnnualKwhFilled)) {
+                    onGridDataIncompleteMessage.classList.remove('hidden');
+                } else {
+                    onGridDataIncompleteMessage.classList.add('hidden');
+                }
+            }
+
+            // Estado del botón de Off-Grid
+            const hasAppliances = appliances.length > 0 && appliances.some(item => (item.consumo > 0 && item.horas > 0));
+            const daysOfAutonomyFilled = daysOfAutonomyInput.value > 0;
+            
+            if (isClientDataComplete && hasAppliances && daysOfAutonomyFilled) {
+                calculateOffGridButton.disabled = false;
+                calculateOffGridButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                calculateOffGridButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                offGridDataIncompleteMessage.classList.add('hidden');
+            } else {
+                calculateOffGridButton.disabled = true;
+                calculateOffGridButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                calculateOffGridButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+                if (systemType === 'offGrid' && (!isClientDataComplete || !hasAppliances || !daysOfAutonomyFilled)) {
+                    offGridDataIncompleteMessage.classList.remove('hidden');
+                } else {
+                    offGridDataIncompleteMessage.classList.add('hidden');
+                }
+            }
+
+            // Estado del botón de Termotanque
+            const isTermotanqueDataComplete = personCountInput.value && (document.querySelector('input[name="hasMinors"]:checked') !== null) && (document.querySelector('input[name="hasPressurizer"]:checked') !== null) && waterTypeSelect.value;
+            if (isClientDataComplete && isTermotanqueDataComplete) {
+                calculateTermotanqueButton.disabled = false;
+                calculateTermotanqueButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                calculateTermotanqueButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                clientDataIncompleteMessage.classList.add('hidden');
+            } else {
+                calculateTermotanqueButton.disabled = true;
+                calculateTermotanqueButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                calculateTermotanqueButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+                if (systemType === 'termotanque' && (!isClientDataComplete || !isTermotanqueDataComplete)) {
+                    clientDataIncompleteMessage.classList.remove('hidden');
+                } else {
+                    clientDataIncompleteMessage.classList.add('hidden');
+                }
+            }
+        };
+
+        // Lógica de cálculo del termotanque
+        const calculateTermotanque = () => {
+            if (!isClientDataComplete) {
+                showSystemMessage('Para calcular el sistema, primero debes completar los datos del cliente.');
                 return;
             }
-            let c_h = v_h;
-            if (v_n.toLowerCase() === 'heladera' && v_h === 24) {
-                c_h = 8;
+            const people = parseInt(personCountInput.value);
+            let tankInfo = '';
+            
+            if (people <= 2) {
+                tankInfo = '1 termotanque de 80 Litros';
+            } else if (people === 3) {
+                tankInfo = '1 termotanque de 150 Litros';
+            } else if (people === 4) {
+                tankInfo = '1 termotanque de 200 Litros';
+            } else if (people === 5) {
+                tankInfo = '1 termotanque de 250 Litros';
+            } else if (people === 6) {
+                tankInfo = '1 termotanque de 300 Litros';
+            } else if (people === 7) {
+                tankInfo = '1 termotanque de 200 Litros y otro de 150 Litros';
+            } else if (people === 8) {
+                tankInfo = '2 termotanques de 200 Litros';
+            } else if (people === 9) {
+                tankInfo = '1 termotanque de 250 Litros y otro de 200 Litros';
+            } else if (people >= 10) {
+                tankInfo = '2 termotanques de 250 Litros';
+            } else {
+                showSystemMessage('Por favor, ingresa un número de personas válido.');
+                return;
             }
-            const dk = (v_q * v_co * c_h / 1000).toFixed(2);
-            const tb = document.getElementById('artifactTableBody');
-            const nr = document.createElement('tr');
-            nr.classList.add('bg-white');
-            nr.innerHTML = `
-                <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">${v_n}</td>
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500">${v_q}</td>
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500">${v_co}</td>
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500">${c_h}</td>
-                <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-500" data-daily-kwh="${dk}">${dk} kWh</td>
-                <td class="px-3 py-2 whitespace-nowrap text-sm font-medium">
-                    <button onclick="r1(this)" class="text-red-600 hover:text-red-900">Eliminar</button>
-                </td>
-            `;
-            tb.appendChild(nr);
-            n.value = '';
-            q.value = '';
-            co.value = '';
-            h.value = '';
-            document.getElementById('predefinedAppliances').value = '';
-            c3();
+            
+            const hasMinors = document.querySelector('input[name="hasMinors"]:checked').value === 'si';
+            const hasPressurizer = document.querySelector('input[name="hasPressurizer"]:checked') ? document.querySelector('input[name="hasPressurizer"]:checked').value === 'si' : false;
+            const waterType = waterTypeSelect.value;
+            const filterRequired = waterType === 'salada';
+            const thermostaticValveRequired = hasMinors;
+            const tankType = hasPressurizer ? 'Heat Pipe (presurizado)' : 'Tubo de Vacío (gravedad)';
+            
+            let resultHTML = `<h3 class="font-bold">Resultado del Cálculo</h3><p class="mt-2">Configuración recomendada:</p><ul class="list-disc list-inside ml-4"><li><span class="font-bold">${tankInfo}</span></li></ul><p class="mt-2">Tipo de termotanque: <span class="font-bold">${tankType}</span></p>`;
+            
+            if (filterRequired) {
+                resultHTML += `<p class="text-sm font-medium mt-2"><span class="font-bold">Importante:</span> Se recomienda utilizar un filtro para el cuidado del equipo, ya que el agua de suministro es salada.</p>`;
+            }
+            if (thermostaticValveRequired) {
+                resultHTML += `<p class="text-sm font-medium mt-2"><span class="font-bold">Importante:</span> Por seguridad de los menores, se recomienda instalar una válvula termostática.</p>`;
+            }
+            resultHTML += `<p class="text-sm font-bold mt-4">Dimensionamiento Preliminar, los valores finales pueden variar.</p>`;
+            termotanqueResultDiv.innerHTML = resultHTML;
+            termotanqueResultDiv.classList.remove('hidden');
+        };
+
+        // Lógica de cálculo del sistema On-Grid
+        const calculateOnGrid = () => {
+            if (!isClientDataComplete) {
+                showSystemMessage('Para calcular el sistema, primero debes completar los datos del cliente.');
+                return;
+            }
+            const annualKwh = parseFloat(annualKwhInput.value);
+            if (isNaN(annualKwh) || annualKwh <= 0) {
+                showSystemMessage('Por favor, ingresa un valor de consumo anual de kWh válido.');
+                return;
+            }
+            const clientProvince = clientProvinceSelect.value;
+            const hps = hpsData[clientProvince];
+            if (!hps) {
+                showSystemMessage('No se encontraron datos de Horas Pico Solar para la provincia seleccionada. Intente de nuevo.');
+                return;
+            }
+            const dailyKwh = annualKwh / 365;
+            const requiredPower = (dailyKwh / hps) * 1000;
+            const panelCount = Math.ceil(requiredPower / panelData.potencia);
+            const totalSystemPower = panelCount * panelData.potencia;
+            let recommendedInverter = null;
+            for (const inverter of inverterData.onGrid) {
+                if (totalSystemPower <= inverter.potencia) {
+                    recommendedInverter = inverter;
+                    break;
+                }
+            }
+            if (!recommendedInverter) {
+                recommendedInverter = inverterData.onGrid[inverterData.onGrid.length - 1];
+            }
+            const resultHTML = `<h3 class="font-bold">Resultado del Cálculo On-Grid</h3><p class="mt-2">Configuración recomendada:</p><ul class="list-disc list-inside ml-4"><li><span class="font-bold">${panelCount}</span> paneles solares de <span class="font-bold">${panelData.potencia}W</span> (${panelData.tipo})</li><li>Inversor: <span class="font-bold">${recommendedInverter.nombre}</span> (${recommendedInverter.potencia / 1000} kW)</li></ul><p class="mt-2 text-sm">Potencia total del sistema: <span class="font-bold">${totalSystemPower / 1000} kW</span></p><p class="text-sm font-bold mt-4">Dimensionamiento Preliminar, los valores finales pueden variar.</p>`;
+            onGridResultDiv.innerHTML = resultHTML;
+            onGridResultDiv.classList.remove('hidden');
+        };
+
+        // Lógica de cálculo del sistema Off-Grid (actualizada)
+        const calculateOffGrid = () => {
+            if (!isClientDataComplete) {
+                showSystemMessage('Para calcular el sistema, primero debes completar los datos del cliente.');
+                return;
+            }
+
+            const daysOfAutonomy = parseFloat(daysOfAutonomyInput.value);
+            if (isNaN(daysOfAutonomy) || daysOfAutonomy <= 0) {
+                showSystemMessage('Por favor, ingresa una cantidad de días de autonomía válida.');
+                return;
+            }
+            
+            let totalDailyWh = 0;
+            appliances.forEach(item => {
+                // Lógica actualizada: Para electrodomésticos con termostato (heladeras, freezers, ACs),
+                // se utiliza el consumo por 8 horas al día, independientemente de las horas de uso ingresadas,
+                // ya que su funcionamiento no es continuo.
+                const applianceName = item.name.toLowerCase();
+                const isThermostatic = applianceName.includes('heladera') || applianceName.includes('freezer') || applianceName.includes('aire acondicionado');
+
+                let dailyConsumption;
+                if (isThermostatic) {
+                    dailyConsumption = (item.consumo || 0) * 8;
+                } else {
+                    dailyConsumption = (item.consumo || 0) * (item.horas || 0);
+                }
+                
+                totalDailyWh += dailyConsumption;
+            });
+
+            if (totalDailyWh === 0) {
+                showSystemMessage('Por favor, agrega al menos un electrodoméstico con horas de uso.');
+                return;
+            }
+
+            const clientProvince = clientProvinceSelect.value;
+            const hps = hpsData[clientProvince];
+            if (!hps) {
+                showSystemMessage('No se encontraron datos de Horas Pico Solar para la provincia seleccionada. Intente de nuevo.');
+                return;
+            }
+
+            // Calculo de paneles
+            const requiredPanelPowerWp = (totalDailyWh / hps) * 1.25;
+            const panelCount = Math.ceil(requiredPanelPowerWp / panelData.potencia);
+            
+            // Selección de inversor
+            let recommendedInverter = null;
+            for (const inverter of inverterData.offGrid) {
+                if (totalDailyWh / 1000 <= inverter.potencia / 1000) {
+                    recommendedInverter = inverter;
+                    break;
+                }
+            }
+            if (!recommendedInverter) {
+                recommendedInverter = inverterData.offGrid[inverterData.offGrid.length - 1];
+            }
+            const systemVoltage = 48; // Usar 48V como estándar para sistemas grandes
+
+            // Generar resultado final con ambas propuestas de baterías
+            let resultHTML = `<h3 class="font-bold">Resultado del Cálculo Off-Grid</h3>
+                                <p class="mt-2">Consumo diario total: <span class="font-bold">${(totalDailyWh / 1000).toFixed(2)} kWh</span></p>
+                                <p class="mt-2">Paneles: <span class="font-bold">${panelCount}</span> de <span class="font-bold">${panelData.potencia}W</span></p>
+                                <p class="mt-2">Inversor: <span class="font-bold">${recommendedInverter.nombre}</span></p>
+                                <p class="text-sm font-medium mt-4">Propuestas de Baterías: se puede utilizar cualquiera de las opciones, pero no se pueden mezclar tecnologías.</p>
+                                <div class="space-y-4 mt-2">`;
+            
+            for (const type in batteryData) {
+                const batteryType = batteryData[type];
+                const requiredBatteryWh = (totalDailyWh * daysOfAutonomy) / batteryType.dod;
+                const requiredBatteryAh = requiredBatteryWh / systemVoltage;
+
+                const foundVoltage = batteryType.voltages.find(v => v.v === systemVoltage);
+                if (foundVoltage) {
+                    const foundCapacity = foundVoltage.capacitiesAh.find(c => c >= requiredBatteryAh);
+                    const selectedCapacity = foundCapacity || Math.max(...foundVoltage.capacitiesAh);
+                    const batteryCount = Math.ceil(requiredBatteryAh / selectedCapacity);
+
+                    resultHTML += `
+                        <div class="p-4 rounded-lg bg-gray-50 border border-gray-200">
+                            <h5 class="font-semibold">${batteryType.name}</h5>
+                            <ul class="list-disc list-inside ml-4 mt-1">
+                                <li><span class="font-bold">${batteryCount}</span> batería(s) de <span class="font-bold">${selectedCapacity} Ah</span> a <span class="font-bold">${systemVoltage} V</span></li>
+                            </ul>
+                        </div>
+                    `;
+                }
+            }
+            resultHTML += `</div><p class="text-sm font-bold mt-6">Dimensionamiento Preliminar, los valores finales pueden variar.</p>`;
+            
+            offGridResultDiv.innerHTML = resultHTML;
+            offGridResultDiv.classList.remove('hidden');
+        };
+
+        // Llenar el dropdown con los datos de electrodomésticos
+        const populateApplianceSelect = () => {
+            applianceList.forEach(item => {
+                const option = document.createElement('option');
+                option.value = JSON.stringify(item);
+                option.textContent = `${item.name} (${item.potencia} W)`;
+                applianceSelect.appendChild(option);
+            });
+        };
+
+        // Renderizar la lista de electrodomésticos seleccionados
+        const renderApplianceList = () => {
+            appliancesContainer.innerHTML = '';
+            appliances.forEach((item, index) => {
+                const applianceItem = document.createElement('div');
+                applianceItem.className = 'flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 p-4 bg-gray-50 rounded-lg shadow-sm';
+                applianceItem.innerHTML = `
+                    <div class="flex-1 w-full sm:w-auto">
+                        <p class="font-medium text-gray-800">${item.name}</p>
+                        <p class="text-sm text-gray-500">
+                            Potencia: ${item.potencia} W | Consumo/h: ${item.consumo} Wh
+                        </p>
+                    </div>
+                    <div class="flex items-center space-x-2 w-full sm:w-auto mt-2 sm:mt-0">
+                        <label for="hours-${index}" class="text-sm text-gray-600 min-w-max">Horas de uso:</label>
+                        <input type="number" id="hours-${index}" value="${item.horas}" placeholder="0" min="0" max="24" class="w-20 p-2 border border-gray-300 rounded-lg text-right" data-index="${index}">
+                        <button class="remove-btn w-6 h-6 flex items-center justify-center bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors" data-index="${index}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                `;
+                appliancesContainer.appendChild(applianceItem);
+            });
+            updateButtonStates();
+        };
+        
+        // Guardar datos en Firestore
+        async function saveAppliances() {
+            if (userId && userDocRef) {
+                try {
+                    await setDoc(userDocRef, { data: appliances });
+                    console.log("Datos guardados en Firestore.");
+                } catch (error) {
+                    console.error("Error al guardar en Firestore:", error);
+                }
+            }
         }
-        function r1(b) {
-            const r = b.closest('tr');
-            r.remove();
-            c3();
+
+        // Cargar datos de Firestore y configurar el listener
+        async function loadAppliances() {
+            if (userId) {
+                userDocRef = doc(db, `/artifacts/${appId}/users/${userId}/appliances`, 'user-list');
+                try {
+                    const docSnap = await getDoc(userDocRef);
+                    if (docSnap.exists()) {
+                        const savedData = docSnap.data().data;
+                        if (Array.isArray(savedData)) {
+                            appliances = savedData;
+                            renderApplianceList();
+                        }
+                    }
+                } catch (error) {
+            console.error("Error al cargar datos de Firestore:", error);
+                }
+            }
         }
-        function c3() {
-            const tr = document.querySelectorAll('#artifactTableBody tr');
-            let tc = 0;
-            tr.forEach(r => {
-                const kwhc = r.querySelector('[data-daily-kwh]');
-                if (kwhc) {
-                    tc += parseFloat(kwhc.dataset.dailyKwh);
+
+        // --- LÓGICA DE CONTROL DE SESIÓN ---
+        const setupSessionControl = () => {
+            if (!userId) {
+                console.error("No se pudo iniciar el control de sesión: userId no disponible.");
+                return;
+            }
+            sessionDocRef = doc(db, `/artifacts/${appId}/public/data/sessions`, userId);
+            
+            // Reclamar la sesión en la base de datos
+            const claimSession = async () => {
+                try {
+                    await setDoc(sessionDocRef, { deviceId: deviceId, timestamp: new Date() });
+                } catch (error) {
+                    console.error("Error al reclamar la sesión:", error);
+                }
+            };
+
+            claimSession(); // Reclamar la sesión al inicio
+
+            // Listener en tiempo real
+            onSnapshot(sessionDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const sessionData = docSnap.data();
+                    if (sessionData.deviceId !== deviceId) {
+                        isSessionActive = false;
+                        showLockModal("Esta sesión ha sido terminada porque el software se ha iniciado en otro dispositivo. Por favor, cierra esta ventana.", false);
+                    } else {
+                        isSessionActive = true;
+                        if (!isSoftwareLocked) {
+                           hideLockModal();
+                        }
+                    }
+                } else {
+                    // Si el documento de sesión no existe, reclamar la sesión
+                    claimSession();
                 }
             });
-            document.getElementById('totalDailyConsumption').innerText = `${tc.toFixed(2)} kWh`;
-        }
+        };
+        
+        // Nuevo: Lógica de control de bloqueo basada en tiempo de uso
+        const checkLockStatus = () => {
+            if (!userId) {
+                console.error("No se puede verificar el estado de bloqueo: userId no disponible.");
+                return;
+            }
+
+            activationDocRef = doc(db, `/artifacts/${appId}/users/${userId}/lock`, 'activation');
+            scheduleDocRef = doc(db, `/artifacts/${appId}/public/data/lockSchedule`, 'schedule');
+
+            onSnapshot(activationDocRef, async (docSnap) => {
+                let activationTime = null;
+                isFirstUnlockCompleted = false;
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    activationTime = data.activationTime?.toDate();
+                    isFirstUnlockCompleted = data.firstUnlockCompleted || false;
+                }
+
+                const now = new Date();
+                const lockTimeMillis = 1.5 * 60 * 60 * 1000; // 1.5 horas de prueba
+
+                if (!activationTime) {
+                    // Primer uso del software, registrar la hora de activación
+                    try {
+                        await setDoc(activationDocRef, { activationTime: now, firstUnlockCompleted: false });
+                        isSoftwareLocked = false;
+                        hideLockModal();
+                        console.log("Tiempo de activación registrado.");
+                    } catch (error) {
+                        console.error("Error al registrar el tiempo de activación:", error);
+                        isSoftwareLocked = true;
+                        showLockModal("Error del sistema. Por favor, reinicia la aplicación.", false);
+                    }
+                } else {
+                    // Ya hay un tiempo de activación
+                    if (!isFirstUnlockCompleted) {
+                        // Aún no se ha desbloqueado por primera vez
+                        if (now.getTime() >= (activationTime.getTime() + lockTimeMillis)) {
+                            isSoftwareLocked = true;
+                            showLockModal("El período de prueba ha finalizado. Por favor, ingresa la clave 'CLAVE1' para continuar.", true);
+                        } else {
+                            isSoftwareLocked = false;
+                            hideLockModal();
+                        }
+                    } else {
+                        // El primer desbloqueo ya se realizó, ahora se comprueba el siguiente bloqueo programado
+                        onSnapshot(scheduleDocRef, (scheduleSnap) => {
+                            if (scheduleSnap.exists()) {
+                                const scheduleData = scheduleSnap.data()?.schedule || [];
+                                const now = new Date();
+                                const currentLock = scheduleData.find(entry => now.getTime() >= entry.lockTime.toDate().getTime());
+                                if (currentLock) {
+                                    isSoftwareLocked = true;
+                                    showLockModal(`El software está bloqueado. Por favor, ingresa la clave para desbloquearlo.`, true);
+                                } else {
+                                    isSoftwareLocked = false;
+                                    hideLockModal();
+                                }
+                            } else {
+                                // No hay un horario de bloqueo futuro, el software permanece desbloqueado
+                                isSoftwareLocked = false;
+                                hideLockModal();
+                            }
+                        }, (error) => {
+                            console.error("Error al obtener el horario de bloqueo:", error);
+                            isSoftwareLocked = false;
+                            hideLockModal();
+                        });
+                    }
+                }
+            }, (error) => {
+                console.error("Error al obtener el estado de activación:", error);
+                isSoftwareLocked = true;
+                showLockModal("Error del sistema. Por favor, reinicia la aplicación.", false);
+            });
+        };
+
+        // Inicialización y Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Listeners de navegación
+            sidebarButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    showSection(btn.id.replace('btn-', ''));
+                });
+            });
+
+            // Nuevo: Listener para el botón de desbloqueo
+            unlockButton.addEventListener('click', async () => {
+                const enteredCode = unlockCodeInput.value.trim();
+                const activationData = (await getDoc(activationDocRef)).data();
+                
+                if (enteredCode === firstUnlockCode && !activationData.firstUnlockCompleted) {
+                    try {
+                        // Generar el calendario de claves futuras
+                        const now = new Date();
+                        const schedule = futureKeys.map((key, index) => {
+                            const lockDate = new Date();
+                            lockDate.setMonth(now.getMonth() + (6 * (index + 1)));
+                            return {
+                                key: key,
+                                lockTime: Timestamp.fromDate(lockDate)
+                            };
+                        });
+
+                        await setDoc(activationDocRef, { firstUnlockCompleted: true, lastUnlockTime: now }, { merge: true });
+                        await setDoc(scheduleDocRef, { schedule: schedule });
+                        isSoftwareLocked = false;
+                        hideLockModal();
+                        showSystemMessage("¡Software desbloqueado! ¡Bienvenido de nuevo!");
+                    } catch (error) {
+                        console.error("Error al actualizar el estado de bloqueo o generar el calendario:", error);
+                        showSystemMessage("Error al intentar desbloquear. Por favor, inténtalo de nuevo.");
+                    }
+                } else {
+                    const scheduleSnap = await getDoc(scheduleDocRef);
+                    if (scheduleSnap.exists()) {
+                        const scheduleData = scheduleSnap.data()?.schedule || [];
+                        const now = new Date();
+                        const currentLockIndex = scheduleData.findIndex(entry => now.getTime() >= entry.lockTime.toDate().getTime());
+                        
+                        if (currentLockIndex !== -1 && enteredCode === scheduleData[currentLockIndex].key) {
+                            // Elimina el bloqueo actual de la base de datos
+                            const updatedSchedule = scheduleData.filter((_, index) => index > currentLockIndex);
+                            await setDoc(scheduleDocRef, { schedule: updatedSchedule });
+                            isSoftwareLocked = false;
+                            hideLockModal();
+                            showSystemMessage("¡Software desbloqueado! ¡Bienvenido de nuevo!");
+                        } else {
+                            showSystemMessage("Clave incorrecta. Por favor, inténtalo de nuevo.");
+                        }
+                    } else {
+                        showSystemMessage("Clave incorrecta. Por favor, inténtalo de nuevo.");
+                    }
+                }
+            });
+
+
+            // Listeners de Datos del Cliente
+            [clientNameInput, clientAddressInput, clientProvinceSelect].forEach(input => {
+                input.addEventListener('input', updateClientDataState);
+            });
+
+            // Listeners de On-Grid
+            annualKwhInput.addEventListener('input', updateButtonStates);
+            calculateOnGridButton.addEventListener('click', calculateOnGrid);
+
+            // Listeners de Off-Grid
+            applianceSelect.addEventListener('change', () => {
+                const selectedOption = applianceSelect.options[applianceSelect.selectedIndex];
+                if (selectedOption.textContent.toLowerCase().includes('otro')) {
+                    customApplianceModal.classList.remove('hidden');
+                }
+            });
+
+            addApplianceBtn.addEventListener('click', () => {
+                const selectedValue = applianceSelect.value;
+                if (selectedValue) {
+                    const newAppliance = JSON.parse(selectedValue);
+                    if (newAppliance.name.toLowerCase() === 'otro') {
+                        showSystemMessage('Por favor, ingresa los datos de tu electrodoméstico personalizado.');
+                        customApplianceModal.classList.remove('hidden');
+                        return;
+                    }
+                    const isDuplicate = appliances.some(item => item.name === newAppliance.name);
+                    if (!isDuplicate) {
+                        newAppliance.horas = 0; // Se inicializa en 0
+                        appliances.push(newAppliance);
+                        renderApplianceList();
+                        saveAppliances();
+                    }
+                }
+            });
+
+            // Listeners para el modal "Otro"
+            addCustomApplianceBtn.addEventListener('click', () => {
+                const name = customApplianceNameInput.value.trim();
+                const power = parseFloat(customAppliancePowerInput.value);
+                const consumption = parseFloat(customApplianceConsumptionInput.value);
+
+                if (name && !isNaN(power) && power > 0 && !isNaN(consumption) && consumption > 0) {
+                    const newAppliance = { name: name, potencia: power, consumo: consumption, horas: 0 }; // Se inicializa en 0
+                    const isDuplicate = appliances.some(item => item.name === newAppliance.name);
+                    if (!isDuplicate) {
+                        appliances.push(newAppliance);
+                        renderApplianceList();
+                        saveAppliances();
+                        customApplianceModal.classList.add('hidden');
+                        customApplianceNameInput.value = '';
+                        customAppliancePowerInput.value = '';
+                        customApplianceConsumptionInput.value = '';
+                    } else {
+                        showSystemMessage('Este electrodoméstico ya existe en tu lista.');
+                    }
+                } else {
+                    showSystemMessage('Por favor, completa todos los campos correctamente.');
+                }
+            });
+
+            cancelCustomApplianceBtn.addEventListener('click', () => {
+                customApplianceModal.classList.add('hidden');
+            });
+
+
+            daysOfAutonomyInput.addEventListener('input', updateButtonStates);
+            calculateOffGridButton.addEventListener('click', calculateOffGrid);
+
+            // Listeners para los elementos de la lista de electrodomésticos
+            appliancesContainer.addEventListener('click', (e) => {
+                if (e.target.closest('.remove-btn')) {
+                    const index = parseInt(e.target.closest('.remove-btn').dataset.index);
+                    appliances.splice(index, 1);
+                    renderApplianceList();
+                    saveAppliances();
+                }
+            });
+            appliancesContainer.addEventListener('input', (e) => {
+                if (e.target.tagName === 'INPUT' && e.target.type === 'number') {
+                    const index = parseInt(e.target.dataset.index);
+                    const value = parseFloat(e.target.value);
+                    if (!isNaN(value) && value >= 0) {
+                        appliances[index].horas = value;
+                        updateButtonStates();
+                        saveAppliances();
+                    }
+                }
+            });
+
+            // Listeners de Termotanque
+            personCountInput.addEventListener('input', updateButtonStates);
+            hasMinorsInputs.forEach(input => input.addEventListener('change', updateButtonStates));
+            hasPressurizerInputs.forEach(input => input.addEventListener('change', updateButtonStates));
+            waterTypeSelect.addEventListener('change', updateButtonStates);
+            calculateTermotanqueButton.addEventListener('click', calculateTermotanque);
+
+            // Listeners de Modales
+            closeModalButton.addEventListener('click', () => {
+                messageModal.classList.add('hidden');
+            });
+
+            // Llenar dropdown de electrodomésticos
+            populateApplianceSelect();
+
+            // Autenticar con Firebase y cargar datos
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    loadAppliances();
+                    setupSessionControl(); // Iniciar el control de sesión
+                    checkLockStatus(); // Iniciar el control de bloqueo
+                } else {
+                    try {
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) {
+                        console.error("Error al iniciar sesión:", error);
+                    }
+                }
+            });
+            
+            // Inicializar estado del botón al cargar
+            updateButtonStates();
+        });
     </script>
 </body>
 </html>
+
 
